@@ -1,5 +1,5 @@
 ---
-import '../styles/global.css';
+import "../styles/global.css";
 
 interface Props {
   title?: string;
@@ -7,8 +7,8 @@ interface Props {
 }
 
 const {
-  title = 'Grupo Cordillera Blanca SA',
-  description = 'Panel de acceso a los sistemas y aplicaciones de Grupo Cordillera Blanca SA',
+  title = "Grupo Cordillera Blanca SA",
+  description = "Panel de acceso a los sistemas y aplicaciones de Grupo Cordillera Blanca SA",
 } = Astro.props;
 ---
 
@@ -18,15 +18,15 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/nothing.svg" />
+    <link rel="icon" href="/nothing.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <script is:inline>
-      (function() {
-        const saved = localStorage.getItem('gcb-theme');
-        if (saved !== 'light') {
-          document.documentElement.classList.add('dark');
+      (function () {
+        const saved = localStorage.getItem("gcb-theme");
+        if (saved !== "light") {
+          document.documentElement.classList.add("dark");
         }
       })();
     </script>
