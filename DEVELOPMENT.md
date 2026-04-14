@@ -26,3 +26,12 @@ Refactorización
 - Además colocamos los diferentes proyecto alrededor del títulos "Grupo Cordillera Blanca SA - Proyectos", similara un sistema planetaario pero que sea profesional, aplicando diferentes animaciones y estilos para que sea más atractivo
 
 
+============================
+
+Light mode por defecto + toggle dark mode
+- Se eliminó el logo en header, centro del cosmos y sección móvil; solo aparece el nombre "Grupo Cordillera Blanca SA"
+- El nombre de la empresa en header y centro del cosmos usa un degradado multicolor (dorado → violeta → verde → naranja), tomado de los colores de los planetas del logo
+- Light mode activado por defecto; botón luna/sol en el header permite alternar a dark mode (preferencia guardada en localStorage)
+- Variables CSS --bg, --text, --muted, --dim, --border, --hdr-bg, --tip-bg, --card-bg, --body-bg, etc. controlan todos los colores en ambos modos
+- global.css actualizado para reflejar el fondo claro en el body por defecto
+

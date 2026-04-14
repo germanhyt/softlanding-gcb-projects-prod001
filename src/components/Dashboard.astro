@@ -1,6 +1,4 @@
 ---
-import logo from '../assets/logo.png';
-
 /* ── Deterministic star field (golden-ratio distribution) ── */
 const stars = Array.from({ length: 110 }, (_, i) => ({
   id: i,
@@ -72,9 +70,24 @@ const mobileGroups = [
   <!-- ════════════════ HEADER ════════════════ -->
   <header class="hd">
     <div class="hd-in">
-      <img src={logo.src} alt="" width="36" height="36" class="hd-logo" fetchpriority="high" />
       <span class="hd-name">Grupo Cordillera Blanca SA</span>
-      <span class="hd-tag">Portal</span>
+      <div class="hd-right">
+        <span class="hd-tag">Portal</span>
+        <button class="theme-btn" id="theme-toggle" aria-label="Cambiar tema" title="Cambiar tema">
+          <!-- Sol: visible en dark mode para volver a light -->
+          <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <!-- Luna: visible en light mode para pasar a dark -->
+          <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -109,7 +122,6 @@ const mobileGroups = [
         <div class="ch ch-2" aria-hidden="true" />
         <div class="ch ch-3" aria-hidden="true" />
         <div class="cbody">
-          <img src={logo.src} alt="GCB" width="64" height="64" class="clogo" />
           <h1 class="ch1">Grupo<br/>Cordillera<br/>Blanca SA</h1>
           <p class="csub">Proyectos</p>
         </div>
@@ -172,7 +184,6 @@ const mobileGroups = [
   <!-- ════════════════ MOBILE ════════════════ -->
   <div class="mob" aria-label="Proyectos">
     <div class="mob-hero">
-      <img src={logo.src} alt="" width="72" height="72" class="mob-logo" />
       <h1 class="mob-h1">Grupo Cordillera<br/>Blanca SA</h1>
       <p class="mob-sub">Proyectos</p>
     </div>
@@ -230,13 +241,58 @@ const mobileGroups = [
      STYLES
 ════════════════════════════════════════════════════ -->
 <style>
-/* ── Root vars ─────────────────────────────────────── */
+/* ── CSS Variables — light mode (default) ───────────── */
 :root {
-  --gold:   #C9A84C;
-  --cream:  #F5EDD8;
-  --black:  #0A0A0A;
-  --fd:     'Work Sans', sans-serif;
-  --fb:     'Manrope', sans-serif;
+  --fd: 'Work Sans', sans-serif;
+  --fb: 'Manrope', sans-serif;
+
+  /* Superficie / texto */
+  --bg:         #F8F5EF;
+  --surface:    rgba(255,255,255,0.92);
+  --surf-dark:  rgba(255,255,255,0.96);
+  --text:       #1C1814;
+  --muted:      rgba(28,24,20,0.50);
+  --dim:        rgba(28,24,20,0.22);
+  --border:     rgba(28,24,20,0.09);
+
+  /* Dorado adaptado a fondo claro */
+  --gold:        #C9A84C;
+  --gold-light:  rgba(201,168,76,0.12);
+  --gold-glow:   rgba(201,168,76,0.35);
+  --gold-border: rgba(180,140,60,0.28);
+  --gold-text:   #8A6318;
+
+  /* Capas UI */
+  --hdr-bg:     rgba(248,245,239,0.94);
+  --tip-bg:     rgba(255,255,255,0.98);
+  --card-bg:    rgba(255,255,255,0.85);
+  --body-bg:    rgba(255,255,255,0.96);
+  --star-col:   rgba(0,0,0,0.09);
+  --scroll-bg:  #e4dfd4;
+}
+
+/* ── CSS Variables — dark mode ──────────────────────── */
+html.dark {
+  --bg:         #0A0A0A;
+  --surface:    rgba(14,14,14,0.97);
+  --surf-dark:  rgba(8,8,8,0.92);
+  --text:       #F5EDD8;
+  --muted:      rgba(245,237,216,0.48);
+  --dim:        rgba(245,237,216,0.18);
+  --border:     rgba(201,168,76,0.15);
+
+  --gold:        #C9A84C;
+  --gold-light:  rgba(201,168,76,0.13);
+  --gold-glow:   rgba(201,168,76,0.55);
+  --gold-border: rgba(201,168,76,0.28);
+  --gold-text:   rgba(201,168,76,0.80);
+
+  --hdr-bg:     rgba(10,10,10,0.88);
+  --tip-bg:     rgba(14,14,14,0.97);
+  --card-bg:    rgba(24,24,24,0.75);
+  --body-bg:    rgba(8,8,8,0.92);
+  --star-col:   #F5EDD8;
+  --scroll-bg:  #111;
 }
 
 /* ── Page ──────────────────────────────────────────── */
@@ -244,44 +300,71 @@ const mobileGroups = [
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--black);
-  color: var(--cream);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--fb);
+  transition: background .3s, color .3s;
   overflow-x: hidden;
 }
 
 /* ── Header ────────────────────────────────────────── */
 .hd {
   position: sticky; top: 0; z-index: 200;
-  background: rgba(10,10,10,0.88);
-  border-bottom: 1px solid rgba(201,168,76,0.15);
+  background: var(--hdr-bg);
+  border-bottom: 1px solid var(--border);
   backdrop-filter: blur(18px);
   flex-shrink: 0;
+  transition: background .3s, border-color .3s;
 }
 .hd-in {
   max-width: 1200px; margin: 0 auto;
   padding: 0.65rem 1.25rem;
   display: flex; align-items: center; gap: 0.75rem;
 }
-.hd-logo {
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(201,168,76,0.35), 0 0 14px rgba(201,168,76,0.18);
-}
 .hd-name {
-  font-family: var(--fd); font-weight: 600;
-  font-size: 0.88rem; color: var(--cream);
+  font-family: var(--fd); font-weight: 700;
+  font-size: 0.92rem;
+  background: linear-gradient(90deg, #C9A84C 0%, #9B6DFF 38%, #3CC9A4 72%, #FF8C42 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   letter-spacing: 0.01em;
 }
-.hd-tag {
+.hd-right {
   margin-left: auto;
+  display: flex; align-items: center; gap: 0.6rem;
+}
+.hd-tag {
   font-size: 0.6rem; font-weight: 600;
   text-transform: uppercase; letter-spacing: 0.14em;
-  color: rgba(201,168,76,0.65);
-  background: rgba(201,168,76,0.08);
-  border: 1px solid rgba(201,168,76,0.18);
+  color: var(--gold-text);
+  background: var(--gold-light);
+  border: 1px solid var(--gold-border);
   border-radius: 99px;
   padding: 0.2rem 0.65rem;
+  transition: color .3s, background .3s, border-color .3s;
 }
+
+/* ── Theme toggle ───────────────────────────────────── */
+.theme-btn {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: border-color .2s, background .2s, color .2s, box-shadow .2s;
+}
+.theme-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 10px var(--gold-glow);
+}
+/* Sol visible en dark (para volver a light), Luna visible en light (para ir a dark) */
+.icon-sun  { display: none; }
+.icon-moon { display: block; }
+html.dark .icon-sun  { display: block; }
+html.dark .icon-moon { display: none; }
 
 /* ── Cosmos wrap ───────────────────────────────────── */
 .cosmos-wrap {
@@ -304,7 +387,7 @@ const mobileGroups = [
 .star {
   position: absolute;
   border-radius: 50%;
-  background: var(--cream);
+  background: var(--star-col);
   pointer-events: none;
 }
 @keyframes spulse {
@@ -340,7 +423,7 @@ const mobileGroups = [
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(245,237,216,0.18);
+  color: var(--dim);
   white-space: nowrap;
   pointer-events: none;
   transform: translateX(-50%);
@@ -361,20 +444,20 @@ const mobileGroups = [
 
 .ring-i {
   width: 400px; height: 400px;
-  border: 1px dashed rgba(201,168,76,0.22);
+  border: 1px dashed rgba(201,168,76,0.32);
   transform: translate(-50%,-50%);
-  box-shadow: 0 0 30px rgba(201,168,76,0.05) inset;
+  box-shadow: 0 0 30px rgba(201,168,76,0.06) inset;
   animation: rs  70s linear infinite;
 }
 .ring-m {
   width: 640px; height: 640px;
-  border: 1px dashed rgba(155,109,255,0.16);
+  border: 1px dashed rgba(155,109,255,0.24);
   transform: translate(-50%,-50%);
   animation: rsr 100s linear infinite;
 }
 .ring-o {
   width: 840px; height: 840px;
-  border: 1px dashed rgba(74,158,255,0.12);
+  border: 1px dashed rgba(74,158,255,0.18);
   transform: translate(-50%,-50%);
   animation: rs  140s linear infinite;
 }
@@ -403,33 +486,30 @@ const mobileGroups = [
 
 .cbody {
   position: relative; z-index: 2;
-  width: 170px; height: 170px;
+  width: 156px; height: 156px;
   border-radius: 50%;
-  background: rgba(8,8,8,0.92);
-  border: 1px solid rgba(201,168,76,0.28);
+  background: var(--body-bg);
+  border: 1px solid var(--gold-border);
   box-shadow:
-    0 0 0 4px rgba(201,168,76,0.06),
-    0 0 40px rgba(201,168,76,0.16),
+    0 0 0 4px var(--gold-light),
+    0 0 40px var(--gold-glow),
     0 0 80px rgba(201,168,76,0.06);
   backdrop-filter: blur(10px);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 0.5rem;
-}
-.clogo {
-  border-radius: 50%;
-  width: 52px; height: 52px;
-  object-fit: cover; margin-bottom: 0.35rem;
+  text-align: center; padding: 0.75rem;
+  transition: background .3s, border-color .3s, box-shadow .3s;
 }
 .ch1 {
   font-family: var(--fd); font-weight: 700;
-  font-size: 0.58rem; line-height: 1.35;
-  color: var(--cream); margin: 0;
-  letter-spacing: 0.02em;
+  font-size: 0.67rem; line-height: 1.35;
+  background: linear-gradient(135deg, #C9A84C 0%, #9B6DFF 50%, #3CC9A4 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin: 0; letter-spacing: 0.02em;
 }
 .csub {
-  font-size: 0.5rem; margin: 0.2rem 0 0;
+  font-size: 0.5rem; margin: 0.25rem 0 0;
   letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(201,168,76,0.8);
+  color: var(--gold-text);
 }
 
 /* ── Planets ───────────────────────────────────────── */
@@ -483,10 +563,10 @@ const mobileGroups = [
   top: 42px; left: 0;
   transform: translateX(-50%);
   font-family: var(--fb); font-size: 0.65rem; font-weight: 600;
-  color: rgba(245,237,216,0.65);
+  color: var(--muted);
   white-space: nowrap;
   pointer-events: none;
-  text-shadow: 0 1px 10px rgba(0,0,0,0.9);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.12);
   transition: color .25s ease;
 }
 .planet:hover .plabel,
@@ -498,7 +578,7 @@ const mobileGroups = [
   bottom: 50px; left: 0;
   transform: translateX(-50%) translateY(-6px);
   width: 196px;
-  background: rgba(14,14,14,0.97);
+  background: var(--tip-bg);
   border: 1px solid var(--pc);
   border-radius: 14px;
   padding: 0.8rem;
@@ -507,7 +587,7 @@ const mobileGroups = [
   transition: opacity .22s ease, transform .22s ease;
   z-index: 200;
   backdrop-filter: blur(14px);
-  box-shadow: 0 8px 36px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03), 0 0 20px var(--pg);
+  box-shadow: 0 8px 36px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.04), 0 0 20px var(--pg);
   text-align: left;
 }
 /* Arrow pip (down) */
@@ -516,7 +596,7 @@ const mobileGroups = [
   position: absolute; bottom: -6px; left: 50%;
   transform: translateX(-50%) rotate(45deg);
   width: 10px; height: 10px;
-  background: rgba(14,14,14,0.97);
+  background: var(--tip-bg);
   border-right: 1px solid var(--pc);
   border-bottom: 1px solid var(--pc);
 }
@@ -555,16 +635,17 @@ const mobileGroups = [
 .ptip-title {
   display: block;
   font-family: var(--fd); font-size: 0.82rem; font-weight: 700;
-  color: var(--cream); margin: 0 0 0.22rem; line-height: 1.3;
+  color: var(--text); margin: 0 0 0.22rem; line-height: 1.3;
+  transition: color .3s;
 }
 .ptip-desc {
-  font-size: 0.7rem; color: rgba(245,237,216,0.48);
+  font-size: 0.7rem; color: var(--muted);
   margin: 0 0 0.65rem; line-height: 1.5;
 }
 .ptip-btn {
   display: inline-flex; align-items: center; gap: 0.35rem;
   font-size: 0.72rem; font-weight: 600;
-  color: #0A0A0A;
+  color: #fff;
   background: var(--pc);
   border-radius: 7px; padding: 0.32rem 0.8rem;
   text-decoration: none;
@@ -581,35 +662,31 @@ const mobileGroups = [
   display: flex; flex-direction: column; align-items: center;
   text-align: center; gap: 0.7rem; padding: 1.5rem 0;
 }
-.mob-logo {
-  border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(201,168,76,0.35), 0 0 28px rgba(201,168,76,0.22);
-}
 .mob-h1 {
   font-family: var(--fd); font-size: 1.7rem; font-weight: 700;
   margin: 0; line-height: 1.2;
-  background: linear-gradient(135deg, #F5EDD8 0%, #C9A84C 100%);
+  background: linear-gradient(135deg, #C9A84C 0%, #9B6DFF 40%, #3CC9A4 80%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .mob-sub {
   font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: rgba(201,168,76,0.7); margin: 0;
+  color: var(--gold-text); margin: 0;
 }
 
 .mob-grp { display: flex; flex-direction: column; gap: 0.6rem; }
 .mob-gh  { display: flex; align-items: center; gap: 0.65rem; padding: 0 0.2rem; }
 .mob-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.mob-gname { font-family: var(--fd); font-size: 0.82rem; font-weight: 600; color: var(--cream); display: block; }
-.mob-gsub  { font-size: 0.62rem; color: rgba(245,237,216,0.32); display: block; margin-top: 0.1rem; }
+.mob-gname { font-family: var(--fd); font-size: 0.82rem; font-weight: 600; color: var(--text); display: block; transition: color .3s; }
+.mob-gsub  { font-size: 0.62rem; color: var(--dim); display: block; margin-top: 0.1rem; }
 
 .mob-cards { display: flex; flex-direction: column; gap: 0.45rem; }
 .mob-card {
   display: flex; align-items: center; gap: 0.85rem;
   padding: 0.85rem 1rem;
-  background: rgba(24,24,24,0.75); border: 1px solid rgba(201,168,76,0.1);
+  background: var(--card-bg); border: 1px solid var(--border);
   border-radius: 13px; text-decoration: none;
   backdrop-filter: blur(8px);
-  transition: border-color .2s, box-shadow .2s, transform .2s;
+  transition: border-color .2s, box-shadow .2s, transform .2s, background .3s;
 }
 .mob-card:hover {
   border-color: var(--mc);
@@ -627,17 +704,17 @@ const mobileGroups = [
 .mc-body { flex: 1; min-width: 0; }
 .mc-title {
   font-family: var(--fd); font-size: 0.8rem; font-weight: 600;
-  color: var(--cream); margin: 0;
+  color: var(--text); margin: 0;
   transition: color .2s;
 }
 .mob-card:hover .mc-title { color: var(--mc); }
-.mc-desc { font-size: 0.68rem; color: rgba(245,237,216,0.38); margin: 0.18rem 0 0; }
-.mc-arr { width: 14px; height: 14px; color: rgba(245,237,216,0.2); flex-shrink: 0; transition: color .2s; }
+.mc-desc { font-size: 0.68rem; color: var(--muted); margin: 0.18rem 0 0; }
+.mc-arr { width: 14px; height: 14px; color: var(--dim); flex-shrink: 0; transition: color .2s; }
 .mob-card:hover .mc-arr { color: var(--mc); }
 
 /* ── Footer ────────────────────────────────────────── */
-.ft { border-top: 1px solid rgba(201,168,76,0.1); padding: 1rem; text-align: center; flex-shrink: 0; }
-.ft p { font-size: 0.68rem; color: rgba(245,237,216,0.18); margin: 0; }
+.ft { border-top: 1px solid var(--border); padding: 1rem; text-align: center; flex-shrink: 0; }
+.ft p { font-size: 0.68rem; color: var(--dim); margin: 0; }
 
 /* ── Responsive breakpoints ────────────────────────── */
 @media (max-width: 767px) {
@@ -650,6 +727,13 @@ const mobileGroups = [
      SCRIPT — Orbital animation + scaling
 ════════════════════════════════════════════════════ -->
 <script>
+  /* ── Theme toggle ── */
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn?.addEventListener('click', () => {
+    const isDark = document.documentElement.classList.toggle('dark');
+    localStorage.setItem('gcb-theme', isDark ? 'dark' : 'light');
+  });
+
   /* ── Orbit radii per screen size ── */
   function radii(w: number) {
     if (w >= 900) return { inner: 200, middle: 320, outer: 420 };

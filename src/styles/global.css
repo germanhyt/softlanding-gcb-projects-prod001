@@ -20,16 +20,26 @@ html {
 
 body {
   min-height: 100%;
-  background-color: #0A0A0A;
-  color: #F5EDD8;
+  background-color: #F8F5EF;
+  color: #1C1814;
   font-family: 'Manrope', sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color .3s, color .3s;
+}
+
+html.dark body {
+  background-color: #0A0A0A;
+  color: #F5EDD8;
 }
 
 /* ── Scrollbar ────────────────────────────────── */
 ::-webkit-scrollbar          { width: 6px; }
-::-webkit-scrollbar-track    { background: #111; }
-::-webkit-scrollbar-thumb    { background: rgba(201,168,76,0.28); border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.55); }
+::-webkit-scrollbar-track    { background: #e4dfd4; }
+::-webkit-scrollbar-thumb    { background: rgba(201,168,76,0.35); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.60); }
+
+html.dark ::-webkit-scrollbar-track { background: #111; }
+html.dark ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.28); }
+html.dark ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,0.55); }
