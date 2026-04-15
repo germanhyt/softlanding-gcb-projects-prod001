@@ -40,13 +40,13 @@ const icons: Record<string, string> = {
 /* ── Planet definitions ── */
 const planets = [
   /* ── Inner orbit · Refugio Data · Gold · CW ── */
-  { id:'p-proc',   label:'Procesamiento', full:'Módulo Procesamiento',     desc:'Gestión y análisis de datos operativos',   href:'https://datarefugio.gcbprojects.site/legacy',    color:'#C9A84C', bg:'rgba(201,168,76,0.13)',  glow:'rgba(201,168,76,0.55)',  group:'Refugio Data', orbit:'inner',  phase:270, speed:0.30, dir: 1, icon:'db'    },
+  { id:'p-proc',   label:'Procesamiento Data', full:'Módulo Procesamiento Data',     desc:'Gestión y análisis de datos operativos',   href:'https://datarefugio.gcbprojects.site/legacy',    color:'#C9A84C', bg:'rgba(201,168,76,0.13)',  glow:'rgba(201,168,76,0.55)',  group:'Refugio Data', orbit:'inner',  phase:270, speed:0.30, dir: 1, icon:'db'    },
   { id:'p-del',    label:'Delivery',      full:'Módulo Delivery',          desc:'Control y seguimiento de pedidos',          href:'https://datarefugio.gcbprojects.site/delivery',  color:'#DEB86A', bg:'rgba(222,184,106,0.13)', glow:'rgba(222,184,106,0.55)', group:'Refugio Data', orbit:'inner',  phase:30,  speed:0.30, dir: 1, icon:'truck' },
   { id:'p-com',    label:'Comercial',     full:'Módulo Comercial',         desc:'Reservas, eventos y CRM',                   href:'https://datarefugio.gcbprojects.site/comercial', color:'#F0CC7A', bg:'rgba(240,204,122,0.13)', glow:'rgba(240,204,122,0.55)', group:'Refugio Data', orbit:'inner',  phase:150, speed:0.30, dir: 1, icon:'chart' },
   /* ── Middle orbit · Sistemas & Apps · CCW ── */
   { id:'p-est',    label:'Estacionam.',   full:'Sistema Estacionamiento',  desc:'Gestión de estacionamiento',                href:'https://estacionamiento.gcbprojects.site/',       color:'#9B6DFF', bg:'rgba(155,109,255,0.13)', glow:'rgba(155,109,255,0.55)', group:'Sistema',      orbit:'middle', phase:90,  speed:0.20, dir:-1, icon:'park'  },
-  { id:'p-kiosk',  label:'App Kiosko',    full:'App Kiosko',               desc:'Descarga · App punto de venta',             href:'https://expo.dev/accounts/refugiodata/projects/kiosk/builds/0d3caff2-fad9-445a-84e2-44ddbe7c4afd',   color:'#3CC9A4', bg:'rgba(60,201,164,0.13)',  glow:'rgba(60,201,164,0.55)',  group:'Descarga',     orbit:'middle', phase:330, speed:0.20, dir:-1, icon:'screen'},
-  { id:'p-runner', label:'App Runner',    full:'App Runner',               desc:'Descarga · App de despacho',                href:'https://expo.dev/accounts/refugiodata/projects/runner/builds/a87a3801-1402-4315-a91d-13109e47ef65',   color:'#FF8C42', bg:'rgba(255,140,66,0.13)',  glow:'rgba(255,140,66,0.55)',  group:'Descarga',     orbit:'middle', phase:210, speed:0.20, dir:-1, icon:'play'  },
+  { id:'p-kiosk',  label:'Web Kiosko',    full:'Web Kiosko',               desc:'Punto de venta en navegador',                 href:'https://kiosk.datarefugio.gcbprojects.site/',   color:'#3CC9A4', bg:'rgba(60,201,164,0.13)',  glow:'rgba(60,201,164,0.55)',  group:'Descarga',     orbit:'middle', phase:330, speed:0.20, dir:-1, icon:'screen'},
+  { id:'p-runner', label:'App Runner',    full:'App Runner',               desc:'Descarga · App de despacho',                href:'https://expo.dev/accounts/refugdata/projects/runner/builds/fd25aa38-4dc2-4d78-82bf-03ab9624d3e9',   color:'#FF8C42', bg:'rgba(255,140,66,0.13)',  glow:'rgba(255,140,66,0.55)',  group:'Descarga',     orbit:'middle', phase:210, speed:0.20, dir:-1, icon:'play'  },
   /* ── Outer orbit · Tools · CW ── */
   { id:'p-ai',   label:'Agente AI',     full:'Consultas Agente AI',      desc:'Consultas con inteligencia artificial',     href:'http://62.169.23.24:8083/',                      color:'#4A9EFF', bg:'rgba(74,158,255,0.13)',  glow:'rgba(74,158,255,0.55)',  group:'Herramienta',  orbit:'outer',  phase:45,  speed:0.13, dir: 1, icon:'ai'    },
   { id:'p-conc', label:'Conciliación',  full:'Conciliación Financiera',  desc:'Sistema de conciliación financiera',        href:'http://62.169.23.24:8082/login',                 color:'#FF6B8E', bg:'rgba(255,107,142,0.13)', glow:'rgba(255,107,142,0.55)', group:'Sistema',      orbit:'outer',  phase:225, speed:0.13, dir: 1, icon:'bal'   },
@@ -230,7 +230,7 @@ const mobileGroups = [
 
   <!-- Footer -->
   <footer class="ft">
-    <p>© {new Date().getFullYear()} Grupo Cordillera Blanca SA &mdash; Refugio Gastrobotánica</p>
+    <p>© {new Date().getFullYear()} Grupo Cordillera Blanca SA</p>
   </footer>
 
   <!-- Data bridge for script -->
@@ -253,6 +253,7 @@ const mobileGroups = [
   --text:       #1C1814;
   --muted:      rgba(28,24,20,0.50);
   --dim:        rgba(28,24,20,0.22);
+  --orbit-label: rgba(28,24,20,0.44);
   --border:     rgba(28,24,20,0.09);
 
   /* Dorado adaptado a fondo claro */
@@ -279,6 +280,7 @@ html.dark {
   --text:       #F5EDD8;
   --muted:      rgba(245,237,216,0.48);
   --dim:        rgba(245,237,216,0.18);
+  --orbit-label: rgba(245,237,216,0.46);
   --border:     rgba(201,168,76,0.15);
 
   --gold:        #C9A84C;
@@ -423,7 +425,7 @@ html.dark .icon-moon { display: none; }
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--dim);
+  color: var(--orbit-label);
   white-space: nowrap;
   pointer-events: none;
   transform: translateX(-50%);
@@ -483,6 +485,9 @@ html.dark .icon-moon { display: none; }
 .ch-1 { width: 210px; height: 210px; background: radial-gradient(circle, rgba(201,168,76,0.30) 0%, transparent 70%); animation: hpulse  3.2s ease-in-out infinite; }
 .ch-2 { width: 340px; height: 340px; background: radial-gradient(circle, rgba(201,168,76,0.10) 0%, transparent 70%); animation: hpulse2 4.5s ease-in-out infinite; animation-delay: -1.5s; }
 .ch-3 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(201,168,76,0.04) 0%, transparent 70%); animation: hpulse3 6s   ease-in-out infinite; animation-delay: -3s; }
+html.dark .ch-1 { background: radial-gradient(circle, rgba(201,168,76,0.18) 0%, transparent 70%); }
+html.dark .ch-2 { background: radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%); }
+html.dark .ch-3 { background: radial-gradient(circle, rgba(201,168,76,0.025) 0%, transparent 70%); }
 
 .cbody {
   position: relative; z-index: 2;
@@ -498,6 +503,13 @@ html.dark .icon-moon { display: none; }
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 0.75rem;
   transition: background .3s, border-color .3s, box-shadow .3s;
+}
+html.dark .cbody {
+  border-color: rgba(201,168,76,0.20);
+  box-shadow:
+    0 0 0 3px rgba(201,168,76,0.07),
+    0 0 26px rgba(201,168,76,0.24),
+    0 0 52px rgba(201,168,76,0.035);
 }
 .ch1 {
   font-family: var(--fd); font-weight: 700;
