@@ -23,6 +23,10 @@ const icons: Record<string, string> = {
   chart: `<rect x="2"  y="14" width="4" height="7" rx="1"/>
           <rect x="9"  y="9"  width="4" height="12" rx="1"/>
           <rect x="16" y="4"  width="4" height="17" rx="1"/>`,
+  doc:   `<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>`,
   park:  `<rect x="3" y="3" width="18" height="18" rx="2"/>
           <path d="M9 17V7h4a3 3 0 010 6H9"/>`,
   screen:`<rect x="2" y="3" width="20" height="14" rx="2"/>
@@ -43,13 +47,15 @@ const planets = [
   { id:'p-proc',   label:'Procesamiento Data', full:'Módulo Procesamiento Data',     desc:'Gestión y análisis de datos operativos',   href:'https://datarefugio.gcbprojects.site/legacy',    color:'#C9A84C', bg:'rgba(201,168,76,0.13)',  glow:'rgba(201,168,76,0.55)',  group:'Refugio Data', orbit:'inner',  phase:270, speed:0.30, dir: 1, icon:'db'    },
   { id:'p-del',    label:'Delivery',      full:'Módulo Delivery',          desc:'Control y seguimiento de pedidos',          href:'https://datarefugio.gcbprojects.site/delivery',  color:'#DEB86A', bg:'rgba(222,184,106,0.13)', glow:'rgba(222,184,106,0.55)', group:'Refugio Data', orbit:'inner',  phase:30,  speed:0.30, dir: 1, icon:'truck' },
   { id:'p-com',    label:'Comercial',     full:'Módulo Comercial',         desc:'Reservas, eventos y CRM',                   href:'https://datarefugio.gcbprojects.site/comercial', color:'#F0CC7A', bg:'rgba(240,204,122,0.13)', glow:'rgba(240,204,122,0.55)', group:'Refugio Data', orbit:'inner',  phase:150, speed:0.30, dir: 1, icon:'chart' },
+  { id:'p-docgcb', label:'Documentación GCB', full:'Documentación GCB',    desc:'Documentos y consultas GCB',  href:'https://datarefugio.gcbprojects.site/documentos-gcb', color:'#E0C46E', bg:'rgba(224,196,110,0.13)', glow:'rgba(224,196,110,0.55)', group:'Refugio Data', orbit:'inner',  phase:210, speed:0.30, dir: 1, icon:'doc' },
   /* ── Middle orbit · Sistemas & Apps · CCW ── */
   { id:'p-est',    label:'Estacionam.',   full:'Sistema Estacionamiento',  desc:'Gestión de estacionamiento',                href:'https://estacionamiento.gcbprojects.site/',       color:'#9B6DFF', bg:'rgba(155,109,255,0.13)', glow:'rgba(155,109,255,0.55)', group:'Sistema',      orbit:'middle', phase:90,  speed:0.20, dir:-1, icon:'park'  },
   { id:'p-kiosk',  label:'Web Kiosko',    full:'Web Kiosko',               desc:'Punto de venta en navegador',                 href:'https://kiosk.datarefugio.gcbprojects.site/',   color:'#3CC9A4', bg:'rgba(60,201,164,0.13)',  glow:'rgba(60,201,164,0.55)',  group:'Descarga',     orbit:'middle', phase:330, speed:0.20, dir:-1, icon:'screen'},
-  { id:'p-runner', label:'App Runner',    full:'App Runner',               desc:'Descarga · App de despacho',                href:'https://expo.dev/accounts/refugdata/projects/runner/builds/fd25aa38-4dc2-4d78-82bf-03ab9624d3e9',   color:'#FF8C42', bg:'rgba(255,140,66,0.13)',  glow:'rgba(255,140,66,0.55)',  group:'Descarga',     orbit:'middle', phase:210, speed:0.20, dir:-1, icon:'play'  },
+  { id:'p-runner', label:'App Runner',    full:'App Runner',               desc:'Descarga · App de despacho',                href:'https://expo.dev/accounts/refugdata/projects/runner/builds/c44c3137-7846-496a-a1bf-c4300bb14766',   color:'#FF8C42', bg:'rgba(255,140,66,0.13)',  glow:'rgba(255,140,66,0.55)',  group:'Descarga',     orbit:'middle', phase:210, speed:0.20, dir:-1, icon:'play'  },
   /* ── Outer orbit · Tools · CW ── */
   { id:'p-ai',   label:'Agente AI',     full:'Consultas Agente AI',      desc:'Consultas con inteligencia artificial',     href:'http://62.169.23.24:8083/',                      color:'#4A9EFF', bg:'rgba(74,158,255,0.13)',  glow:'rgba(74,158,255,0.55)',  group:'Herramienta',  orbit:'outer',  phase:45,  speed:0.13, dir: 1, icon:'ai'    },
   { id:'p-conc', label:'Conciliación',  full:'Conciliación Financiera',  desc:'Sistema de conciliación financiera',        href:'http://62.169.23.24:8082/login',                 color:'#FF6B8E', bg:'rgba(255,107,142,0.13)', glow:'rgba(255,107,142,0.55)', group:'Sistema',      orbit:'outer',  phase:225, speed:0.13, dir: 1, icon:'bal'   },
+
 ];
 
 const scriptData = JSON.stringify(

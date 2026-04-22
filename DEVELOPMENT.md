@@ -109,6 +109,9 @@ En caso de tener que generar o renovar por primera vez el SSL para el dominio:
 ### 6. Reinicio para aplicar cambios
 En la ruta `/home/projects/shared/`, ejecutar:
 ```bash
-docker-compose up -d
+cd /home/projects/shared/
+docker compose up -d
 docker restart nginx_proxy
 ```
+
+
