@@ -15,6 +15,8 @@ const icons: Record<string, string> = {
           <path d="M3 6v4c0 1.66 4 3 9 3s9-1.34 9-3V6"/>
           <path d="M3 10v4c0 1.66 4 3 9 3s9-1.34 9-3v-4"/>
           <path d="M3 14v4c0 1.66 4 3 9 3s9-1.34 9-3v-4"/>`,
+  refugio:`<path d="M3 10.5L12 4l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10.5z"/>
+          <path d="M8 21V13h8v8"/>`,
   truck: `<path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/>
           <polygon points="16 3 21 8 21 17 16 17 16 3"/>
           <circle cx="7" cy="17" r="2"/>
@@ -45,34 +47,43 @@ const icons: Record<string, string> = {
           <line x1="3" y1="10" x2="21" y2="10"/>`,
 };
 
-/* ── Planet definitions ── */
-const planets = [
-  /* ── Inner orbit · Refugio Data · Gold · CW ── */
-  { id:'p-proc',   label:'Procesamiento Data', full:'Módulo Procesamiento Data',     desc:'Gestión y análisis de datos operativos',   href:'https://datarefugio.gcbprojects.site/legacy',    color:'#C9A84C', bg:'rgba(201,168,76,0.13)',  glow:'rgba(201,168,76,0.55)',  group:'Refugio Data', orbit:'inner',  phase:270, speed:0.30, dir: 1, icon:'db'    },
-  { id:'p-del',    label:'Delivery',      full:'Módulo Delivery',          desc:'Control y seguimiento de pedidos',          href:'https://datarefugio.gcbprojects.site/delivery',  color:'#DEB86A', bg:'rgba(222,184,106,0.13)', glow:'rgba(222,184,106,0.55)', group:'Refugio Data', orbit:'inner',  phase:30,  speed:0.30, dir: 1, icon:'truck' },
-  { id:'p-com',    label:'Comercial',     full:'Módulo Comercial',         desc:'Reservas, eventos y CRM',                   href:'https://datarefugio.gcbprojects.site/comercial', color:'#F0CC7A', bg:'rgba(240,204,122,0.13)', glow:'rgba(240,204,122,0.55)', group:'Refugio Data', orbit:'inner',  phase:150, speed:0.30, dir: 1, icon:'chart' },
-  { id:'p-docgcb', label:'Documentación GCB', full:'Documentación GCB',    desc:'Documentos y consultas GCB',  href:'https://datarefugio.gcbprojects.site/documentos-gcb', color:'#E0C46E', bg:'rgba(224,196,110,0.13)', glow:'rgba(224,196,110,0.55)', group:'Refugio Data', orbit:'inner',  phase:210, speed:0.30, dir: 1, icon:'doc' },
-  /* ── Middle orbit · Sistemas & Apps · CCW ── */
-  { id:'p-est',    label:'Estacionam.',   full:'Sistema Estacionamiento',  desc:'Gestión de estacionamiento',                href:'https://estacionamiento.gcbprojects.site/',       color:'#9B6DFF', bg:'rgba(155,109,255,0.13)', glow:'rgba(155,109,255,0.55)', group:'Sistema',      orbit:'middle', phase:90,  speed:0.20, dir:-1, icon:'park'  },
-  { id:'p-kiosk',  label:'Web Kiosko',    full:'Web Kiosko',               desc:'Punto de venta en navegador',                 href:'https://kiosk.datarefugio.gcbprojects.site/',   color:'#3CC9A4', bg:'rgba(60,201,164,0.13)',  glow:'rgba(60,201,164,0.55)',  group:'Descarga',     orbit:'middle', phase:330, speed:0.20, dir:-1, icon:'screen'},
-  { id:'p-runner', label:'App Runner',    full:'App Runner',               desc:'Descarga · App de despacho',                href:'https://expo.dev/accounts/refugdata/projects/runner/builds/a6e38cfb-6bf2-4353-a639-e92daeac7836',   color:'#FF8C42', bg:'rgba(255,140,66,0.13)',  glow:'rgba(255,140,66,0.55)',  group:'Descarga',     orbit:'middle', phase:210, speed:0.20, dir:-1, icon:'play'  },
-  { id:'p-agenda', label:'Agenda deportiva', full:'Agenda Deportiva · Refugio', desc:'Partidos destacados y eventos deportivos', href:'https://softlanding-calendario-deportivo-gc-xi.vercel.app/', color:'#5FD4A8', bg:'rgba(95,212,168,0.13)', glow:'rgba(95,212,168,0.55)', group:'Descarga', orbit:'middle', phase:270, speed:0.20, dir:-1, icon:'cal' },
-  /* ── Outer orbit · Tools · CW ── */
-  { id:'p-ai',   label:'Agente AI',     full:'Consultas Agente AI',      desc:'Consultas con inteligencia artificial',     href:'https://consultas.gcbprojects.site/',            color:'#4A9EFF', bg:'rgba(74,158,255,0.13)',  glow:'rgba(74,158,255,0.55)',  group:'Herramienta',  orbit:'outer',  phase:45,  speed:0.13, dir: 1, icon:'ai'    },
-  { id:'p-conc', label:'Conciliación',  full:'Conciliación Financiera',  desc:'Sistema de conciliación financiera',        href:'https://conciliacion.gcbprojects.site/',         color:'#FF6B8E', bg:'rgba(255,107,142,0.13)', glow:'rgba(255,107,142,0.55)', group:'Sistema',      orbit:'outer',  phase:225, speed:0.13, dir: 1, icon:'bal'   },
+/* ── Orbit color themes (one palette per ring) ── */
+const orbitThemes = {
+  inner:  { color:'#C9A84C', bg:'rgba(201,168,76,0.13)',  glow:'rgba(201,168,76,0.55)' },
+  middle: { color:'#9B6DFF', bg:'rgba(155,109,255,0.13)', glow:'rgba(155,109,255,0.55)' },
+  outer:  { color:'#4A9EFF', bg:'rgba(74,158,255,0.13)',  glow:'rgba(74,158,255,0.55)' },
+} as const;
 
+type OrbitKey = keyof typeof orbitThemes;
+
+/* ── Planet definitions ── */
+const planetDefs = [
+  /* ── Inner orbit · Refugio Data · Gold · CW ── */
+  { id:'p-proc',   label:'Refugio Data', full:'Refugio Data',                  desc:'Plataforma de gestión y análisis de datos operativos', href:'https://datarefugio.gcbprojects.site/legacy',    group:'Refugio Data', orbit:'inner'  as OrbitKey, phase:270, speed:0.30, dir: 1, icon:'refugio' },
+  { id:'p-del',    label:'Delivery',      full:'Módulo Delivery',          desc:'Control y seguimiento de pedidos',          href:'https://datarefugio.gcbprojects.site/delivery',  group:'Refugio Data', orbit:'inner'  as OrbitKey, phase:30,  speed:0.30, dir: 1, icon:'truck' },
+  { id:'p-com',    label:'Comercial',     full:'Módulo Comercial',         desc:'Reservas, eventos y CRM',                   href:'https://datarefugio.gcbprojects.site/comercial', group:'Refugio Data', orbit:'inner'  as OrbitKey, phase:150, speed:0.30, dir: 1, icon:'chart' },
+  { id:'p-docgcb', label:'Documentación GCB', full:'Documentación GCB',    desc:'Documentos y consultas GCB',  href:'https://datarefugio.gcbprojects.site/documentos-gcb', group:'Refugio Data', orbit:'inner'  as OrbitKey, phase:210, speed:0.30, dir: 1, icon:'doc' },
+  /* ── Middle orbit · Sistemas & Apps · CCW ── */
+  { id:'p-est',    label:'Estacionam.',   full:'Sistema Estacionamiento',  desc:'Gestión de estacionamiento',                href:'https://estacionamiento.gcbprojects.site/',       group:'Sistema',      orbit:'middle' as OrbitKey, phase:90,  speed:0.20, dir:-1, icon:'park'  },
+  { id:'p-kiosk',  label:'Web Kiosko',    full:'Web Kiosko',               desc:'Punto de venta en navegador',                 href:'https://kiosk.datarefugio.gcbprojects.site/',   group:'Descarga',     orbit:'middle' as OrbitKey, phase:330, speed:0.20, dir:-1, icon:'screen'},
+  { id:'p-runner', label:'App Runner',    full:'App Runner',               desc:'Descarga · App de despacho',                href:'https://expo.dev/accounts/refugdata/projects/runner/builds/a6e38cfb-6bf2-4353-a639-e92daeac7836',   group:'Descarga',     orbit:'middle' as OrbitKey, phase:210, speed:0.20, dir:-1, icon:'play'  },
+  { id:'p-agenda', label:'Agenda deportiva', full:'Agenda Deportiva · Refugio', desc:'Partidos destacados y eventos deportivos', href:'https://softlanding-calendario-deportivo-gc-xi.vercel.app/', group:'Descarga', orbit:'middle' as OrbitKey, phase:270, speed:0.20, dir:-1, icon:'cal' },
+  /* ── Outer orbit · Tools · CW ── */
+  { id:'p-ai',   label:'Agente AI',     full:'Consultas Agente AI',      desc:'Consultas con inteligencia artificial',     href:'https://consultas.gcbprojects.site/',            group:'Herramienta',  orbit:'outer'  as OrbitKey, phase:45,  speed:0.13, dir: 1, icon:'ai'    },
+  { id:'p-conc', label:'Conciliación',  full:'Conciliación Financiera',  desc:'Sistema de conciliación financiera',        href:'https://conciliacion.gcbprojects.site/',         group:'Sistema',      orbit:'outer'  as OrbitKey, phase:225, speed:0.13, dir: 1, icon:'bal'   },
 ];
+
+const planets = planetDefs.map(p => ({ ...p, ...orbitThemes[p.orbit] }));
 
 const scriptData = JSON.stringify(
   planets.map(({ id, orbit, phase, speed, dir }) => ({ id, orbit, phase, speed, dir }))
 );
 
-/* Mobile group order */
-const mobileGroups = [
-  { key: 'Refugio Data', sub: 'datarefugio.gcbprojects.site' },
-  { key: 'Sistema',      sub: 'Sistemas internos' },
-  { key: 'Descarga',     sub: 'Aplicaciones móviles' },
-  { key: 'Herramienta',  sub: 'Herramientas avanzadas' },
+/* Mobile sections — mirror desktop orbit layout */
+const mobileOrbits: { orbit: OrbitKey; label: string; sub: string }[] = [
+  { orbit: 'inner',  label: 'Refugio Data',    sub: 'datarefugio.gcbprojects.site' },
+  { orbit: 'middle', label: 'Sistemas & Apps', sub: 'Sistemas y aplicaciones' },
+  { orbit: 'outer',  label: 'Herramientas',    sub: 'Herramientas avanzadas' },
 ];
 ---
 
@@ -199,15 +210,16 @@ const mobileGroups = [
       <p class="mob-sub">Proyectos</p>
     </div>
 
-    {mobileGroups.map(({ key, sub }) => {
-      const grp = planets.filter(p => p.group === key);
+    {mobileOrbits.map(({ orbit, label, sub }) => {
+      const grp = planets.filter(p => p.orbit === orbit);
       if (!grp.length) return null;
+      const theme = orbitThemes[orbit];
       return (
-        <div class="mob-grp">
+        <div class="mob-grp" style={`--og:${theme.color};--ogg:${theme.glow}`}>
           <div class="mob-gh">
-            <span class="mob-dot" style={`background:${grp[0].color};box-shadow:0 0 8px ${grp[0].glow}`} />
+            <span class="mob-dot" style={`background:${theme.color};box-shadow:0 0 8px ${theme.glow}`} />
             <div>
-              <b class="mob-gname">{key}</b>
+              <b class="mob-gname">{label}</b>
               <span class="mob-gsub">{sub}</span>
             </div>
           </div>
@@ -266,6 +278,11 @@ const mobileGroups = [
   --dim:        rgba(28,24,20,0.22);
   --orbit-label: rgba(28,24,20,0.44);
   --border:     rgba(28,24,20,0.09);
+
+  /* Órbitas */
+  --orbit-inner:  #C9A84C;
+  --orbit-middle: #9B6DFF;
+  --orbit-outer:  #4A9EFF;
 
   /* Dorado adaptado a fondo claro */
   --gold:        #C9A84C;
@@ -441,9 +458,9 @@ html.dark .icon-moon { display: none; }
   pointer-events: none;
   transform: translateX(-50%);
 }
-.rl-inner  { margin-top: calc(-200px - 18px); }
-.rl-middle { margin-top: calc(-320px - 18px); }
-.rl-outer  { margin-top: calc(-420px - 18px); }
+.rl-inner  { margin-top: calc(-200px - 18px); color: color-mix(in srgb, var(--orbit-inner) 72%, var(--text)); }
+.rl-middle { margin-top: calc(-320px - 18px); color: color-mix(in srgb, var(--orbit-middle) 72%, var(--text)); }
+.rl-outer  { margin-top: calc(-420px - 18px); color: color-mix(in srgb, var(--orbit-outer) 72%, var(--text)); }
 
 /* ── Orbit rings ───────────────────────────────────── */
 .ring {
@@ -457,21 +474,23 @@ html.dark .icon-moon { display: none; }
 
 .ring-i {
   width: 400px; height: 400px;
-  border: 1px dashed rgba(201,168,76,0.32);
+  border: 1px dashed color-mix(in srgb, var(--orbit-inner) 38%, transparent);
   transform: translate(-50%,-50%);
-  box-shadow: 0 0 30px rgba(201,168,76,0.06) inset;
+  box-shadow: 0 0 30px color-mix(in srgb, var(--orbit-inner) 8%, transparent) inset;
   animation: rs  70s linear infinite;
 }
 .ring-m {
   width: 640px; height: 640px;
-  border: 1px dashed rgba(155,109,255,0.24);
+  border: 1px dashed color-mix(in srgb, var(--orbit-middle) 32%, transparent);
   transform: translate(-50%,-50%);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--orbit-middle) 6%, transparent) inset;
   animation: rsr 100s linear infinite;
 }
 .ring-o {
   width: 840px; height: 840px;
-  border: 1px dashed rgba(74,158,255,0.18);
+  border: 1px dashed color-mix(in srgb, var(--orbit-outer) 28%, transparent);
   transform: translate(-50%,-50%);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--orbit-outer) 5%, transparent) inset;
   animation: rs  140s linear infinite;
 }
 
@@ -688,18 +707,22 @@ html.dark .cbody {
 .mob-h1 {
   font-family: var(--fd); font-size: 1.7rem; font-weight: 700;
   margin: 0; line-height: 1.2;
-  background: linear-gradient(135deg, #C9A84C 0%, #9B6DFF 40%, #3CC9A4 80%);
+  background: linear-gradient(135deg, var(--orbit-inner) 0%, var(--orbit-middle) 50%, var(--orbit-outer) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .mob-sub {
   font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
-  color: var(--gold-text); margin: 0;
+  color: color-mix(in srgb, var(--orbit-inner) 80%, var(--text)); margin: 0;
 }
 
-.mob-grp { display: flex; flex-direction: column; gap: 0.6rem; }
+.mob-grp {
+  display: flex; flex-direction: column; gap: 0.6rem;
+  padding-left: 0.85rem;
+  border-left: 2px solid color-mix(in srgb, var(--og) 35%, transparent);
+}
 .mob-gh  { display: flex; align-items: center; gap: 0.65rem; padding: 0 0.2rem; }
 .mob-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.mob-gname { font-family: var(--fd); font-size: 0.82rem; font-weight: 600; color: var(--text); display: block; transition: color .3s; }
+.mob-gname { font-family: var(--fd); font-size: 0.82rem; font-weight: 600; color: var(--og); display: block; transition: color .3s; }
 .mob-gsub  { font-size: 0.62rem; color: var(--dim); display: block; margin-top: 0.1rem; }
 
 .mob-cards { display: flex; flex-direction: column; gap: 0.45rem; }
