@@ -1,0 +1,92 @@
+---
+---
+
+<header class="variant-header sticky top-0 z-50 backdrop-blur-xl" style="background-color: rgba(10, 10, 10, 0.7); border-bottom: 1px solid var(--color-variant-border);">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8 py-4 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 text-sm font-medium" style="color: var(--color-variant-text-muted);">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12" />
+        <polyline points="12 19 5 12 12 5" />
+      </svg>
+      <span>Portal original</span>
+    </a>
+
+    <div class="variant-gradient-text variant-heading text-base sm:text-lg font-semibold tracking-tight">
+      Grupo Cordillera Blanca SA
+    </div>
+
+    <button
+      type="button"
+      id="variant-theme-toggle"
+      aria-label="Cambiar tema"
+      title="Cambiar tema"
+      class="theme-btn relative inline-flex h-9 w-9 items-center justify-center rounded-full border"
+      style="border-color: var(--color-variant-border); color: var(--color-variant-gold);"
+    >
+      <svg class="icon-sun hidden" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="5" />
+        <line x1="12" y1="1" x2="12" y2="3" /><line x1="12" y1="21" x2="12" y2="23" />
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+        <line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" />
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" /><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+      </svg>
+      <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    </button>
+  </div>
+</header>
+
+<style>
+  .theme-btn {
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+  .theme-btn:hover {
+    transform: scale(1.05);
+  }
+  .theme-btn:active {
+    transform: scale(0.96);
+  }
+
+  :global([data-theme="dark"]) .icon-sun {
+    display: inline-block;
+  }
+  :global([data-theme="dark"]) .icon-moon {
+    display: none;
+  }
+  :global([data-theme="light"]) .icon-sun {
+    display: none;
+  }
+  :global([data-theme="light"]) .icon-moon {
+    display: inline-block;
+  }
+</style>
+
+<script>
+  const toggle = document.getElementById('variant-theme-toggle');
+
+  function applyTheme(theme) {
+    const root = document.documentElement;
+    const variantRoot = document.querySelector('[data-variant-root]');
+    root.dataset.theme = theme;
+    if (variantRoot) variantRoot.dataset.theme = theme;
+    localStorage.setItem('gcb-theme', theme);
+  }
+
+  toggle?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const current = root.dataset.theme || 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    applyTheme(next);
+  });
+
+  const initialTheme = document.documentElement.dataset.theme || 'dark';
+  applyTheme(initialTheme);
+
+  document.addEventListener('astro:after-swap', () => {
+    const current = document.documentElement.dataset.theme || 'dark';
+    applyTheme(current);
+  });
+</script>

@@ -1,0 +1,39 @@
+---
+import '../styles/variant.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Variante 3D · Grupo Cordillera Blanca SA',
+  description = 'Variante con escena Three.js del portal de Grupo Cordillera Blanca SA.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0A0A0A" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+
+    <script is:inline>
+      (function () {
+        const saved = localStorage.getItem('gcb-theme');
+        const initial = saved === 'light' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = initial;
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="variant-shell variant-bg-ambient" data-variant-root>
+      <slot />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+---
+import type { PlanetDef } from '../../data/projects.ts';
+
+export interface Props {
+  product: PlanetDef;
+}
+
+const { product } = Astro.props;
+
+const accentMap: Record<PlanetDef['orbit'], string> = {
+  inner: 'var(--color-variant-gold)',
+  middle: 'var(--color-variant-violet)',
+  outer: 'var(--color-variant-blue)',
+};
+const accent = accentMap[product.orbit];
+---
+
+<a
+  href={product.href}
+  target="_blank"
+  rel="noopener"
+  class="variant-card group block p-5 sm:p-6"
+  style={`--accent: ${accent};`}
+>
+  <div class="flex items-start justify-between mb-3">
+    <span
+      class="inline-flex h-10 w-10 items-center justify-center rounded-lg"
+      style={`background-color: color-mix(in srgb, ${accent} 12%, transparent); color: ${accent};`}
+      aria-hidden="true"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8" />
+        <circle cx="12" cy="12" r="2" fill="currentColor" />
+      </svg>
+    </span>
+    <span
+      class="text-[10px] uppercase tracking-widest px-2 py-1 rounded-full"
+      style={`color: ${accent}; border: 1px solid color-mix(in srgb, ${accent} 35%, transparent);`}
+    >
+      {product.group}
+    </span>
+  </div>
+
+  <h3 class="variant-heading text-lg font-semibold mb-1" style="color: var(--color-variant-text);">
+    {product.label}
+  </h3>
+  <p class="text-xs mb-4" style="color: var(--color-variant-text-muted);">
+    {product.full}
+  </p>
+
+  <p class="text-sm leading-relaxed mb-4" style="color: var(--color-variant-text-muted);">
+    {product.desc}
+  </p>
+
+  <div
+    class="inline-flex items-center gap-1 text-xs font-medium transition-transform group-hover:translate-x-0.5"
+    style={`color: ${accent};`}
+  >
+    <span>Abrir</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="7" y1="17" x2="17" y2="7" />
+      <polyline points="7 7 17 7 17 17" />
+    </svg>
+  </div>
+</a>

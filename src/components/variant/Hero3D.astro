@@ -1,0 +1,263 @@
+---
+---
+
+<section class="variant-hero relative isolate overflow-hidden">
+  <!-- Fallback CSS: visible si WebGL no disponible o reduced-motion (canvas con display:none) -->
+  <div class="variant-hero-fallback" aria-hidden="false">
+    <div class="variant-orb variant-orb-gold"></div>
+    <div class="variant-orb variant-orb-violet"></div>
+    <div class="variant-orb variant-orb-blue"></div>
+  </div>
+
+  <!-- Canvas WebGL (aria-hidden porque es puramente decorativo) -->
+  <canvas id="variant-hero-canvas" aria-hidden="true" role="presentation" class="variant-hero-canvas"></canvas>
+
+  <div class="variant-hero-content">
+    <span class="variant-badge">
+      <span class="variant-badge-dot"></span>
+      Variante 3D · Tech Showcase
+    </span>
+
+    <h1 class="variant-heading variant-hero-title">
+      <span class="block text-2xl sm:text-3xl font-medium" style="color: var(--color-variant-text-muted);">
+        Grupo Cordillera Blanca SA
+      </span>
+      <span class="block variant-gradient-text mt-2 text-5xl sm:text-7xl lg:text-8xl font-bold">
+        Sistemas que<br/>orbitan tu negocio.
+      </span>
+    </h1>
+
+    <p class="variant-hero-tagline">
+      Una suite de microservicios web y móvil para nichos verticales — retail, hospitalidad, movilidad, productividad e IA.
+    </p>
+
+    <div class="variant-hero-actions">
+      <a href="#productos" class="variant-cta variant-cta-primary">
+        Ver portfolio
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </a>
+      <a href="/" class="variant-cta variant-cta-secondary">
+        Portal original
+      </a>
+    </div>
+  </div>
+
+  <div class="variant-hero-scroll-cue" aria-hidden="true">
+    <span class="text-[10px] uppercase tracking-widest" style="color: var(--color-variant-text-muted);">Scroll</span>
+    <div class="variant-hero-scroll-line"></div>
+  </div>
+</section>
+
+<style>
+  .variant-hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    isolation: isolate;
+  }
+
+  .variant-hero-canvas,
+  .variant-hero-fallback {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  .variant-hero-canvas {
+    display: block;
+    pointer-events: none;
+  }
+
+  .variant-hero-canvas.disabled {
+    display: none;
+  }
+
+  /* Deck de fallback CSS (orbs blur) — visible por defecto, oculto si el canvas está activo */
+  .variant-hero-fallback {
+    background:
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(201, 168, 76, 0.18), transparent 70%),
+      radial-gradient(ellipse 30% 30% at 20% 80%, rgba(155, 109, 255, 0.12), transparent 70%),
+      radial-gradient(ellipse 30% 30% at 80% 20%, rgba(74, 158, 255, 0.10), transparent 70%);
+  }
+  .variant-hero-fallback.disabled { display: none; }
+
+  .variant-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    animation: variant-orb-float 18s var(--ease-variant) infinite;
+  }
+  .variant-orb-gold {
+    width: 480px; height: 480px;
+    background: var(--color-variant-gold);
+    top: 10%; left: 50%;
+    transform: translateX(-50%);
+  }
+  .variant-orb-violet {
+    width: 340px; height: 340px;
+    background: var(--color-variant-violet);
+    bottom: 10%; left: 15%;
+    animation-delay: -4s;
+  }
+  .variant-orb-blue {
+    width: 380px; height: 380px;
+    background: var(--color-variant-blue);
+    top: 15%; right: 10%;
+    animation-delay: -8s;
+  }
+  @keyframes variant-orb-float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%      { transform: translate(20px, -30px) scale(1.06); }
+    66%      { transform: translate(-25px, 25px) scale(0.96); }
+  }
+
+  .variant-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 80rem;
+    padding: 0 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .variant-hero-content { padding: 0 2rem; gap: 2rem; }
+  }
+
+  .variant-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    background-color: color-mix(in srgb, var(--color-variant-gold) 10%, transparent);
+    color: var(--color-variant-gold);
+    border: 1px solid color-mix(in srgb, var(--color-variant-gold) 30%, transparent);
+  }
+  .variant-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--color-variant-gold);
+    animation: variant-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes variant-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.9); }
+    50%      { opacity: 1;   transform: scale(1.1); }
+  }
+
+  .variant-hero-title {
+    max-width: 56rem;
+  }
+
+  .variant-hero-tagline {
+    max-width: 42rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-variant-text-muted);
+  }
+  @media (min-width: 640px) {
+    .variant-hero-tagline { font-size: 1.125rem; }
+  }
+
+  .variant-hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .variant-hero-actions { flex-direction: row; }
+  }
+
+  .variant-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 99px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: transform 0.2s var(--ease-variant), box-shadow 0.2s var(--ease-variant),
+                background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+  .variant-cta-primary {
+    background: linear-gradient(135deg, var(--color-variant-gold) 0%, var(--color-variant-violet) 100%);
+    color: #0A0A0A;
+    box-shadow: 0 0 28px rgba(201, 168, 76, 0.25);
+  }
+  .variant-cta-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 32px rgba(201, 168, 76, 0.4);
+  }
+  .variant-cta-secondary {
+    background: transparent;
+    color: var(--color-variant-text-muted);
+    border: 1px solid var(--color-variant-border);
+  }
+  .variant-cta-secondary:hover {
+    color: var(--color-variant-text);
+    border-color: var(--color-variant-border-strong);
+  }
+
+  .variant-hero-scroll-cue {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .variant-hero-scroll-line {
+    width: 1px;
+    height: 32px;
+    background: linear-gradient(to bottom, var(--color-variant-gold), transparent);
+    animation: variant-scroll-line 2s ease-in-out infinite;
+  }
+  @keyframes variant-scroll-line {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .variant-orb,
+    .variant-badge-dot,
+    .variant-hero-scroll-line {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const canvas = document.getElementById('variant-hero-canvas');
+  const fallback = document.querySelector('.variant-hero-fallback') as HTMLElement | null;
+
+  // Reduced motion: NO inicializar WebGL
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (canvas) canvas.classList.add('disabled');
+    // fallback queda visible (es CSS, no invade nada)
+  } else {
+    import('../../scripts/variant/hero3d').then(({ initHero3D }) => {
+      const ready = initHero3D(canvas as HTMLCanvasElement, fallback as HTMLElement).catch(() => {
+        console.warn('[variant-threejs] hero3d init falló, fallback CSS activo');
+      });
+      ready.catch(() => {
+        if (canvas) canvas.classList.add('disabled');
+      });
+    });
+  }
+</script>

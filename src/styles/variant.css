@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+/* ── Tokens de la variante (dark-first Tech/SaaS moderno) ── */
+@theme {
+  --color-variant-bg: #0A0A0A;
+  --color-variant-surface: #141414;
+  --color-variant-surface-elevated: #1C1C1C;
+  --color-variant-border: rgba(201, 168, 76, 0.18);
+  --color-variant-border-strong: rgba(201, 168, 76, 0.5);
+  --color-variant-text: #F5EDD8;
+  --color-variant-text-muted: rgba(245, 237, 216, 0.6);
+  --color-variant-gold: #C9A84C;
+  --color-variant-gold-dark: #A8834A;
+  --color-variant-violet: #9B6DFF;
+  --color-variant-blue: #4A9EFF;
+  --color-variant-green: #3CC9A4;
+  --color-variant-orange: #FF8C42;
+  --font-display: 'Work Sans', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+  --ease-variant: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Light mode overrides: aplicadas solo en la variante ── */
+.variant-shell[data-theme="light"] {
+  --color-variant-bg: #F8F5EF;
+  --color-variant-surface: #FFFFFF;
+  --color-variant-surface-elevated: #F5F1E8;
+  --color-variant-border: rgba(201, 168, 76, 0.22);
+  --color-variant-border-strong: rgba(201, 168, 76, 0.55);
+  --color-variant-text: #1C1814;
+  --color-variant-text-muted: rgba(28, 24, 20, 0.65);
+  --color-variant-gold: #A8834A;
+  --color-variant-gold-dark: #8A6A38;
+  --color-variant-violet: #7E55E0;
+  --color-variant-blue: #2D7AD9;
+  --color-variant-green: #2B9978;
+  --color-variant-orange: #E57032;
+}
+
+/* ── Reset específico de la variante (no dependo del preflight Tailwind) ── */
+.variant-shell {
+  min-height: 100vh;
+  background-color: var(--color-variant-bg);
+  color: var(--color-variant-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.variant-shell *::selection {
+  background-color: rgba(201, 168, 76, 0.3);
+  color: var(--color-variant-text);
+}
+
+.variant-shell *:focus-visible {
+  outline: 2px solid var(--color-variant-gold);
+  outline-offset: 2px;
+}
+
+/* ── Background ambient: radial gradient gold/violet/blue ── */
+.variant-bg-ambient {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201, 168, 76, 0.10), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(155, 109, 255, 0.06), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, rgba(74, 158, 255, 0.05), transparent 60%);
+  background-color: var(--color-variant-bg);
+}
+
+/* ── Gradiente del brand (usado en título hero y header nombre) ── */
+.variant-gradient-text {
+  background: linear-gradient(135deg, #C9A84C 0%, #9B6DFF 50%, #3CC9A4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Headings ── */
+.variant-heading {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+
+/* ── Card hover micro-detailing ── */
+.variant-card {
+  background-color: var(--color-variant-surface);
+  border: 1px solid var(--color-variant-border);
+  border-radius: 14px;
+  transition: transform 0.25s var(--ease-variant), box-shadow 0.25s var(--ease-variant),
+              border-color 0.25s var(--ease-variant);
+}
+
+.variant-card:hover,
+.variant-card:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+  border-color: var(--color-variant-border-strong);
+}
+
+/* ── Parallax scroll-driven (graceful fallback si no soportado) ── */
+@supports (animation-timeline: scroll()) {
+  .variant-parallax-scroll {
+    animation: variant-parallax linear;
+    animation-timeline: scroll(root);
+  }
+  @keyframes variant-parallax {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-12vh); }
+  }
+}
+
+/* ── Reduced motion override ── */
+@media (prefers-reduced-motion: reduce) {
+  .variant-card,
+  .variant-shell,
+  .variant-parallax-scroll {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* ── Scrollbar variant-specific (coincide con el original) ── */
+.variant-shell ::-webkit-scrollbar {
+  width: 6px;
+}
+.variant-shell ::-webkit-scrollbar-track {
+  background: var(--color-variant-bg);
+}
+.variant-shell ::-webkit-scrollbar-thumb {
+  background: rgba(201, 168, 76, 0.28);
+  border-radius: 99px;
+}
+.variant-shell ::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 168, 76, 0.55);
+}

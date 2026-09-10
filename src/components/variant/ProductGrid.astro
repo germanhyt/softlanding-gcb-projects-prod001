@@ -1,0 +1,25 @@
+---
+import ProductCard from './ProductCard.astro';
+import { planetDefs } from '../../data/projects.ts';
+
+const grid = planetDefs;
+---
+
+<section id="productos" class="py-20 sm:py-28">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <header class="flex flex-col gap-4 mb-12 sm:mb-16">
+      <span class="text-xs uppercase tracking-widest" style="color: var(--color-variant-gold);">Portfolio · 10 productos</span>
+      <h2 class="variant-heading text-3xl sm:text-5xl font-semibold max-w-3xl" style="color: var(--color-variant-text);">
+        Sistemas y aplicaciones que<br/>
+        <span class="variant-gradient-text">impulsan a GCB</span>
+      </h2>
+      <p class="text-sm sm:text-base max-w-2xl" style="color: var(--color-variant-text-muted);">
+        Suite de microservicios web y móvil para nichos verticales: retail, hospitalidad, movilidad urbana, productividad interna e inteligencia artificial.
+      </p>
+    </header>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+      {grid.map((p) => <ProductCard product={p} />)}
+    </div>
+  </div>
+</section>
