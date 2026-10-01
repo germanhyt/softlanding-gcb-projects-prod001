@@ -8,8 +8,8 @@ import Footer from '../components/variant/Footer.astro';
   title="Presentación · Grupo Cordillera Blanca SA"
   description="Presentación corporativa de Grupo Cordillera Blanca SA: identidad y mapa semántico de sistemas."
 >
-  <!-- ═══ PÁGINA 1: PORTADA ═══ -->
-  <section id="pres-hero" class="relative flex min-h-svh items-center justify-center overflow-hidden">
+  <!-- ═══ PÁGINA 1: PORTADA (sticky: la página 2 la cubre al scrollear) ═══ -->
+  <section id="pres-hero" class="pres-hero relative flex items-center justify-center overflow-hidden">
     <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
       <img
         src="/logo-gcb.jpg"
@@ -54,21 +54,9 @@ import Footer from '../components/variant/Footer.astro';
     </a>
   </section>
 
-  <!-- ═══ PÁGINA 2: MAPA SEMÁNTICO ═══ -->
-  <section id="pres-map" class="relative py-16 sm:py-24">
+  <!-- ═══ PÁGINA 2: MAPA SEMÁNTICO (cubre la portada al scrollear) ═══ -->
+  <section id="pres-map" class="pres-map relative py-10 sm:py-14">
     <div id="pres-map-inner" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <header class="mb-10 flex flex-col gap-3 sm:mb-14">
-        <span class="text-xs uppercase tracking-widest" style="color: var(--color-variant-gold);">Mapa semántico</span>
-        <h2 class="variant-heading text-3xl sm:text-5xl font-semibold" style="color: var(--color-variant-text);">
-          Un holding, cuatro pilares,<br />
-          <span style="color: var(--color-variant-gold);">diez sistemas entrelazados.</span>
-        </h2>
-        <p class="max-w-2xl text-sm sm:text-base" style="color: var(--color-variant-text-muted);">
-          Cada línea es una dependencia real: del centro de gobernanza a los pilares
-          de negocio y de ahí a cada plataforma productiva.
-        </p>
-      </header>
-
       <SemanticMap />
     </div>
   </section>
@@ -77,6 +65,25 @@ import Footer from '../components/variant/Footer.astro';
 </VariantLayout>
 
 <style>
+  /* Sticky scroll: la portada queda fija y el mapa la cubre como otra página */
+  .pres-hero {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    z-index: 1;
+  }
+  .pres-map {
+    position: relative;
+    z-index: 10;
+    background-color: var(--color-variant-bg);
+    border-top: 1px solid var(--color-variant-border);
+    box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.55);
+  }
+  :global(.variant-footer) {
+    position: relative;
+    z-index: 10;
+    background-color: var(--color-variant-bg);
+  }
   .pres-scroll-cue {
     position: absolute;
     bottom: 1.75rem;

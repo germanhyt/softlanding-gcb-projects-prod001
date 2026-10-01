@@ -36,16 +36,16 @@ const CY = 470;
    Todo el contenido (nombre, desc, URL, badge, tag, domain, icono) viene de
    src/data/projects.ts — single source of truth (ver DESIGN.md). */
 const leafLayout: Record<string, { x: number; y: number }> = {
-  'p-proc':   { x: 267,  y: 599 },
-  'p-del':    { x: 226,  y: 515 },
-  'p-com':    { x: 226,  y: 425 },
-  'p-docgcb': { x: 291,  y: 341 },
-  'p-kiosk':  { x: 1193, y: 370 },
-  'p-runner': { x: 1220, y: 470 },
-  'p-agenda': { x: 1193, y: 570 },
-  'p-ai':     { x: 880,  y: 170 },
-  'p-est':    { x: 778,  y: 800 },
-  'p-conc':   { x: 662,  y: 800 },
+  'p-proc':   { x: 170,  y: 130 },
+  'p-del':    { x: 190,  y: 350 },
+  'p-com':    { x: 190,  y: 570 },
+  'p-docgcb': { x: 170,  y: 790 },
+  'p-kiosk':  { x: 1260, y: 250 },
+  'p-runner': { x: 1240, y: 470 },
+  'p-agenda': { x: 1260, y: 690 },
+  'p-ai':     { x: 950,  y: 170 },
+  'p-est':    { x: 580,  y: 815 },
+  'p-conc':   { x: 860,  y: 815 },
 };
 
 const branchLeafIds: Record<string, string[]> = {
@@ -79,7 +79,7 @@ const branches: MapBranch[] = [
     title: 'Refugio Data',
     desc: 'Operaciones & Gestión Core',
     category: 'Analítica Operativa',
-    x: 420,
+    x: 450,
     y: 470,
     accent: '#C9A84C',
     leaves: branchLeafIds['b-refugio']!.map(leafFromProject),
@@ -89,7 +89,7 @@ const branches: MapBranch[] = [
     title: 'Canales & Despacho',
     desc: 'Venta Directa & Movilidad',
     category: 'Puntos de Venta',
-    x: 1020,
+    x: 990,
     y: 470,
     accent: '#3CC9A4',
     leaves: branchLeafIds['b-channels']!.map(leafFromProject),
@@ -476,8 +476,8 @@ const branches: MapBranch[] = [
 /* Líneas de Conexión */
 .sem-line-main {
   stroke: var(--gold);
-  stroke-width: 1.5;
-  stroke-opacity: 0.45;
+  stroke-width: 2;
+  stroke-opacity: 0.8;
   stroke-linecap: round;
   fill: none;
 }
@@ -498,9 +498,9 @@ const branches: MapBranch[] = [
 }
 
 .sem-line-sub {
-  stroke: var(--border);
-  stroke-width: 1.25;
-  stroke-opacity: 0.85;
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  stroke-opacity: 0.5;
   stroke-linecap: round;
   fill: none;
   transition: stroke 0.2s ease, stroke-width 0.2s ease, stroke-opacity 0.2s ease;
