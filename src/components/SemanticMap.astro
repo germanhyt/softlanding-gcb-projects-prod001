@@ -1,5 +1,6 @@
 ---
 import { planetDefs } from '../data/projects.ts';
+import { icons } from '../data/icons.ts';
 
 /* ── Estructura de Datos para el Mapa Semántico Corporativo ── */
 interface MapLeaf {
@@ -27,23 +28,50 @@ interface MapBranch {
   leaves: MapLeaf[];
 }
 
-const icons: Record<string, string> = {
-  db: `<ellipse cx="12" cy="6" rx="9" ry="3"/><path d="M3 6v4c0 1.66 4 3 9 3s9-1.34 9-3V6"/><path d="M3 10v4c0 1.66 4 3 9 3s9-1.34 9-3v-4"/><path d="M3 14v4c0 1.66 4 3 9 3s9-1.34 9-3v-4"/>`,
-  refugio: `<path d="M3 10.5L12 4l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10.5z"/><path d="M8 21V13h8v8"/>`,
-  truck: `<path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><polygon points="16 3 21 8 21 17 16 17 16 3"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><line x1="9" y1="17" x2="15" y2="17"/>`,
-  chart: `<rect x="2" y="14" width="4" height="7" rx="1"/><rect x="9" y="9" width="4" height="12" rx="1"/><rect x="16" y="4" width="4" height="17" rx="1"/>`,
-  doc: `<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`,
-  park: `<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 010 6H9"/>`,
-  screen: `<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,
-  play: `<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>`,
-  ai: `<path d="M9.663 17h4.674M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>`,
-  bal: `<line x1="12" y1="3" x2="12" y2="21"/><path d="M7 5H3l-1 9h6L7 5z"/><path d="M17 5h4l1 9h-6l1-9z"/><line x1="2" y1="21" x2="22" y2="21"/>`,
-  cal: `<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`,
-};
-
 /* Coordenadas en un lienzo expandido de 1440 × 940 */
 const CX = 720;
 const CY = 470;
+
+/* Layout del lienzo: lo único propio del mapa son las coordenadas x/y.
+   Todo el contenido (nombre, desc, URL, badge, tag, domain, icono) viene de
+   src/data/projects.ts — single source of truth (ver DESIGN.md). */
+const leafLayout: Record<string, { x: number; y: number }> = {
+  'p-proc':   { x: 155,  y: 260 },
+  'p-del':    { x: 135,  y: 400 },
+  'p-com':    { x: 135,  y: 540 },
+  'p-docgcb': { x: 155,  y: 680 },
+  'p-kiosk':  { x: 1285, y: 330 },
+  'p-runner': { x: 1305, y: 470 },
+  'p-agenda': { x: 1285, y: 610 },
+  'p-ai':     { x: 720,  y: 110 },
+  'p-est':    { x: 500,  y: 830 },
+  'p-conc':   { x: 940,  y: 830 },
+};
+
+const branchLeafIds: Record<string, string[]> = {
+  'b-refugio':  ['p-proc', 'p-del', 'p-com', 'p-docgcb'],
+  'b-channels': ['p-kiosk', 'p-runner', 'p-agenda'],
+  'b-ai':       ['p-ai'],
+  'b-infra':    ['p-est', 'p-conc'],
+};
+
+function leafFromProject(id: string): MapLeaf {
+  const p = planetDefs.find((d) => d.id === id)!;
+  const pos = leafLayout[id]!;
+  return {
+    id: p.id,
+    name: p.label,
+    sub: p.full,
+    desc: p.desc,
+    href: p.href,
+    domain: p.domain ?? '',
+    icon: p.icon,
+    tag: p.tag ?? '',
+    badge: p.badge ?? '',
+    x: pos.x,
+    y: pos.y,
+  };
+}
 
 const branches: MapBranch[] = [
   {
@@ -54,12 +82,7 @@ const branches: MapBranch[] = [
     x: 420,
     y: 470,
     accent: '#C9A84C',
-    leaves: [
-      { id: 'p-proc', name: 'Refugio Data', sub: 'Procesamiento BI', desc: 'Consolidación de ventas e informes de gestión', href: 'https://datarefugio.gcbprojects.site/legacy', domain: 'datarefugio.gcbprojects.site', icon: 'refugio', tag: 'Core BI', badge: 'PROD', x: 155, y: 260 },
-      { id: 'p-del', name: 'Módulo Delivery', sub: 'Seguimiento en Vivo', desc: 'Monitoreo de pedidos y tiempos de despacho', href: 'https://datarefugio.gcbprojects.site/delivery', domain: 'datarefugio.gcbprojects.site', icon: 'truck', tag: 'Logística', badge: 'LIVE', x: 135, y: 400 },
-      { id: 'p-com', name: 'Módulo Comercial', sub: 'Reservas & Eventos', desc: 'CRM corporativo, cotizaciones y agenda', href: 'https://datarefugio.gcbprojects.site/comercial', domain: 'datarefugio.gcbprojects.site', icon: 'chart', tag: 'Comercial', badge: 'CRM', x: 135, y: 540 },
-      { id: 'p-docgcb', name: 'Documentación GCB', sub: 'Normativa & Procesos', desc: 'Repositorio corporativo de políticas y manuales', href: 'https://datarefugio.gcbprojects.site/documentos-gcb', domain: 'datarefugio.gcbprojects.site', icon: 'doc', tag: 'Gestión', badge: 'DOCS', x: 155, y: 680 },
-    ],
+    leaves: branchLeafIds['b-refugio']!.map(leafFromProject),
   },
   {
     id: 'b-channels',
@@ -69,11 +92,7 @@ const branches: MapBranch[] = [
     x: 1020,
     y: 470,
     accent: '#3CC9A4',
-    leaves: [
-      { id: 'p-kiosk', name: 'Web Kiosko', sub: 'Punto de Venta Salón', desc: 'Terminal web de autoservicio para salón', href: 'https://kiosk.datarefugio.gcbprojects.site/', domain: 'kiosk.datarefugio.gcbprojects.site', icon: 'screen', tag: 'POS Web', badge: 'SALÓN', x: 1285, y: 330 },
-      { id: 'p-runner', name: 'App Runner', sub: 'Aplicación Móvil', desc: 'Despacho de última milla para operarios', href: 'https://expo.dev/accounts/refugdata/projects/runner/builds/a6e38cfb-6bf2-4353-a639-e92daeac7836', domain: 'expo.dev', icon: 'play', tag: 'Mobile', badge: 'APK', x: 1305, y: 470 },
-      { id: 'p-agenda', name: 'Agenda Deportiva', sub: 'Cartelera Oficial', desc: 'Calendario y transmisiones de eventos', href: 'https://softlanding-calendario-deportivo-gc-xi.vercel.app/', domain: 'vercel.app', icon: 'cal', tag: 'Eventos', badge: 'WEB', x: 1285, y: 610 },
-    ],
+    leaves: branchLeafIds['b-channels']!.map(leafFromProject),
   },
   {
     id: 'b-ai',
@@ -83,9 +102,7 @@ const branches: MapBranch[] = [
     x: 720,
     y: 250,
     accent: '#4A9EFF',
-    leaves: [
-      { id: 'p-ai', name: 'Consultas GCB con AI', sub: 'Asistente Empresarial', desc: 'Consultas en lenguaje natural de métricas operativas', href: 'https://consultas.gcbprojects.site/', domain: 'consultas.gcbprojects.site', icon: 'ai', tag: 'AI Engine', badge: 'CLOUD', x: 720, y: 110 },
-    ],
+    leaves: branchLeafIds['b-ai']!.map(leafFromProject),
   },
   {
     id: 'b-infra',
@@ -95,10 +112,7 @@ const branches: MapBranch[] = [
     x: 720,
     y: 690,
     accent: '#9B6DFF',
-    leaves: [
-      { id: 'p-est', name: 'Estacionamiento', sub: 'Control de Acceso', desc: 'Gestión de aforo vehicular y facturación', href: 'https://estacionamiento.gcbprojects.site/', domain: 'estacionamiento.gcbprojects.site', icon: 'park', tag: 'Acceso', badge: 'PROD', x: 500, y: 830 },
-      { id: 'p-conc', name: 'Conciliación', sub: 'Auditoría Bancaria', desc: 'Liquidación de tarjetas y conciliación contable', href: 'https://conciliacion.gcbprojects.site/', domain: 'conciliacion.gcbprojects.site', icon: 'bal', tag: 'Finanzas', badge: 'FINTECH', x: 940, y: 830 },
-    ],
+    leaves: branchLeafIds['b-infra']!.map(leafFromProject),
   },
 ];
 ---
@@ -352,7 +366,7 @@ const branches: MapBranch[] = [
   height: 36px;
   padding: 0 2.5rem 0 2.3rem;
   font-family: var(--fb);
-  font-size: 0.8rem;
+  font-size: max(16px, 0.8rem); /* mobile-native: <16px hace zoom en iOS al enfocar */
   color: var(--text);
   background-color: var(--card-bg);
   border: 1px solid var(--border);
@@ -655,6 +669,9 @@ const branches: MapBranch[] = [
   border-color: var(--gold);
   background-color: var(--card-bg);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+.sem-leaf:active .sem-leaf-box {
+  transform: scale(.98);
 }
 
 .sem-leaf-head {
