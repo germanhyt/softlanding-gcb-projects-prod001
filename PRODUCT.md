@@ -21,4 +21,5 @@ Encontrar un sistema y abrirlo en ≤ 2 clics, en desktop y en móvil.
 - Data de productos: single source of truth en `src/data/projects.ts`.
 - Tono institucional AR (`lang="es"`, "SA", sin emoji).
 - Rutas: `/` (portal estable) y `/variant` (showcase A/B con Three.js). `/` nunca se rompe por cambios en `/variant`.
+- Ruta `/presentacion`: portada (logo + nombre + scroll cue animado) y sección de mapa semántico radial con transiciones GSAP (ScrollTrigger, code-split solo en esta ruta).
 - Tema dark/light persiste en `localStorage` key `gcb-theme` (`dark` por defecto).

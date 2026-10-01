@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+/* Scroll suave para las páginas de presentación/variante */
+html {
+  scroll-behavior: smooth;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* ── Tokens de la variante (dark-first Tech/SaaS moderno) ── */
 @theme {
   --color-variant-bg: #0A0A0A;

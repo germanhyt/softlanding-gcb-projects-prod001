@@ -1,0 +1,169 @@
+---
+import VariantLayout from '../layouts/VariantLayout.astro';
+import SemanticMap from '../components/SemanticMap.astro';
+import Footer from '../components/variant/Footer.astro';
+---
+
+<VariantLayout
+  title="Presentación · Grupo Cordillera Blanca SA"
+  description="Presentación corporativa de Grupo Cordillera Blanca SA: identidad y mapa semántico de sistemas."
+>
+  <!-- ═══ PÁGINA 1: PORTADA ═══ -->
+  <section id="pres-hero" class="relative flex min-h-svh items-center justify-center overflow-hidden">
+    <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
+      <img
+        src="/logo-gcb.jpg"
+        alt="GCB — Grupo Cordillera Blanca SA"
+        width="112"
+        height="112"
+        class="rounded-3xl block"
+        style="box-shadow: 0 0 0 1px var(--color-variant-border), 0 24px 64px rgba(0,0,0,0.5);"
+        fetchpriority="high"
+      />
+
+      <span
+        class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest"
+        style="color: var(--color-variant-gold); border: 1px solid var(--color-variant-border); background-color: rgba(201,168,76,0.08);"
+      >
+        Presentación corporativa · 10 sistemas
+      </span>
+
+      <h1 class="variant-heading font-bold leading-none">
+        <span class="variant-gradient-text block text-5xl sm:text-7xl">Grupo Cordillera Blanca</span>
+        <span class="mt-3 block text-xl sm:text-2xl font-medium" style="color: var(--color-variant-text-muted);">
+          Sociedad Anónima · Portal Central de Sistemas
+        </span>
+      </h1>
+
+      <p class="max-w-2xl text-sm sm:text-lg" style="color: var(--color-variant-text-muted);">
+        De la identidad al ecosistema: deslizá para recorrer el mapa semántico
+        que entrelaza nuestros cuatro pilares y diez plataformas.
+      </p>
+    </div>
+
+    <!-- Scroll cue animado (obligatorio del brief) -->
+    <a
+      href="#pres-map"
+      class="pres-scroll-cue"
+      aria-label="Deslizar hacia el mapa de sistemas"
+    >
+      <span class="text-[10px] uppercase tracking-widest" style="color: var(--color-variant-text-muted);">Scroll</span>
+      <svg class="pres-scroll-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-variant-gold);">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </a>
+  </section>
+
+  <!-- ═══ PÁGINA 2: MAPA SEMÁNTICO ═══ -->
+  <section id="pres-map" class="relative py-16 sm:py-24">
+    <div id="pres-map-inner" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <header class="mb-10 flex flex-col gap-3 sm:mb-14">
+        <span class="text-xs uppercase tracking-widest" style="color: var(--color-variant-gold);">Mapa semántico</span>
+        <h2 class="variant-heading text-3xl sm:text-5xl font-semibold" style="color: var(--color-variant-text);">
+          Un holding, cuatro pilares,<br />
+          <span class="variant-gradient-text">diez sistemas entrelazados.</span>
+        </h2>
+        <p class="max-w-2xl text-sm sm:text-base" style="color: var(--color-variant-text-muted);">
+          Cada línea es una dependencia real: del centro de gobernanza a los pilares
+          de negocio y de ahí a cada plataforma productiva.
+        </p>
+      </header>
+
+      <SemanticMap />
+    </div>
+  </section>
+
+  <Footer />
+</VariantLayout>
+
+<style>
+  .pres-scroll-cue {
+    position: absolute;
+    bottom: 1.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    z-index: 10;
+  }
+  .pres-scroll-chevron {
+    animation: pres-cue-bounce 1.8s ease-in-out infinite;
+  }
+  @keyframes pres-cue-bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.55; }
+    50%      { transform: translateY(8px); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pres-scroll-chevron { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduced) {
+    // Portada: parallax de salida (el contenido se eleva y disuelve al scrollear)
+    gsap.to('#pres-hero-content', {
+      yPercent: -14,
+      opacity: 0.15,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#pres-hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      },
+    });
+
+    // Página 2: transición tipo pase de página (entra desde abajo con presencia)
+    gsap.from('#pres-map-inner', {
+      y: 72,
+      opacity: 0,
+      scale: 0.99,
+      duration: 0.9,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '#pres-map',
+        start: 'top 78%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
+    // Líneas del mapa: dibujado progresivo al entrar a la sección
+    const lines = Array.from(
+      document.querySelectorAll<SVGPathElement>('#pres-map .sem-line-main, #pres-map .sem-line-sub')
+    );
+    lines.forEach((line) => {
+      try {
+        const len = line.getTotalLength();
+        line.style.strokeDasharray = `${len}`;
+        line.style.strokeDashoffset = `${len}`;
+      } catch {
+        /* paths no medibles: quedan visibles sin animación */
+      }
+    });
+    const drawable = lines.filter((l) => l.style.strokeDashoffset !== '');
+    if (drawable.length > 0) {
+      gsap.to(drawable, {
+        strokeDashoffset: 0,
+        duration: 1.4,
+        ease: 'power2.out',
+        stagger: 0.05,
+        scrollTrigger: {
+          trigger: '#pres-map',
+          start: 'top 55%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    }
+  }
+</script>

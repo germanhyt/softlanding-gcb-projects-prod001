@@ -36,16 +36,16 @@ const CY = 470;
    Todo el contenido (nombre, desc, URL, badge, tag, domain, icono) viene de
    src/data/projects.ts — single source of truth (ver DESIGN.md). */
 const leafLayout: Record<string, { x: number; y: number }> = {
-  'p-proc':   { x: 155,  y: 260 },
-  'p-del':    { x: 135,  y: 400 },
-  'p-com':    { x: 135,  y: 540 },
-  'p-docgcb': { x: 155,  y: 680 },
-  'p-kiosk':  { x: 1285, y: 330 },
-  'p-runner': { x: 1305, y: 470 },
-  'p-agenda': { x: 1285, y: 610 },
-  'p-ai':     { x: 720,  y: 110 },
-  'p-est':    { x: 500,  y: 830 },
-  'p-conc':   { x: 940,  y: 830 },
+  'p-proc':   { x: 267,  y: 599 },
+  'p-del':    { x: 226,  y: 515 },
+  'p-com':    { x: 226,  y: 425 },
+  'p-docgcb': { x: 291,  y: 341 },
+  'p-kiosk':  { x: 1193, y: 370 },
+  'p-runner': { x: 1220, y: 470 },
+  'p-agenda': { x: 1193, y: 570 },
+  'p-ai':     { x: 880,  y: 170 },
+  'p-est':    { x: 778,  y: 800 },
+  'p-conc':   { x: 662,  y: 800 },
 };
 
 const branchLeafIds: Record<string, string[]> = {
@@ -110,7 +110,7 @@ const branches: MapBranch[] = [
     desc: 'Operaciones Físicas y Tesorería',
     category: 'Sistemas Soporte',
     x: 720,
-    y: 690,
+    y: 640,
     accent: '#9B6DFF',
     leaves: branchLeafIds['b-infra']!.map(leafFromProject),
   },
@@ -158,13 +158,15 @@ const branches: MapBranch[] = [
     <div class="sem-board" id="sem-board">
       <svg class="sem-svg" viewBox="0 0 1440 940" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <!-- Patrón de cuadrícula tenue de ingeniería corporativa -->
-          <pattern id="grid-dots" width="40" height="40" patternUnits="userSpaceOnUse">
-            <circle cx="20" cy="20" r="1" fill="var(--border)" opacity="0.45" />
-          </pattern>
+          <!-- Halo ambiental radial (orgánico, sin grilla) -->
+          <radialGradient id="sem-ambient" cx="50%" cy="50%" r="65%">
+            <stop offset="0%" stop-color="#C9A84C" stop-opacity="0.08" />
+            <stop offset="55%" stop-color="#C9A84C" stop-opacity="0.02" />
+            <stop offset="100%" stop-color="#C9A84C" stop-opacity="0" />
+          </radialGradient>
         </defs>
 
-        <rect width="1440" height="940" fill="url(#grid-dots)" />
+        <rect width="1440" height="940" fill="url(#sem-ambient)" />
 
         <!-- ── LÍNEAS NIVEL 1: CENTRO -> PILARES ── -->
         {branches.map(b => (
@@ -183,16 +185,9 @@ const branches: MapBranch[] = [
           </g>
         ))}
 
-        <!-- ── LÍNEAS NIVEL 2: PILARES -> SISTEMAS (CURVAS BÉZIER) ── -->
+        <!-- ── LÍNEAS NIVEL 2: PILARES -> SISTEMAS (RECTAS, boceto hub-spoke) ── -->
         {branches.flatMap(b => b.leaves.map(leaf => {
-          let d = '';
-          if (b.id === 'b-refugio' || b.id === 'b-channels') {
-            const cpX = (b.x + leaf.x) / 2;
-            d = `M ${b.x} ${b.y} C ${cpX} ${b.y}, ${cpX} ${leaf.y}, ${leaf.x} ${leaf.y}`;
-          } else {
-            const cpY = (b.y + leaf.y) / 2;
-            d = `M ${b.x} ${b.y} C ${b.x} ${cpY}, ${leaf.x} ${cpY}, ${leaf.x} ${leaf.y}`;
-          }
+          const d = `M ${b.x} ${b.y} L ${leaf.x} ${leaf.y}`;
 
           return (
             <g class="path-group" id={`group-line-${leaf.id}`}>
@@ -211,7 +206,7 @@ const branches: MapBranch[] = [
       <div class="sem-node sem-core" style={`left:${CX}px; top:${CY}px;`} id="node-center-holding">
         <div class="sem-core-box">
           <div class="sem-core-top">
-            <span class="sem-core-monogram">GCB</span>
+            <img class="sem-core-logo" src="/logo-gcb.jpg" alt="GCB — Grupo Cordillera Blanca SA" width="36" height="36" loading="lazy" />
             <span class="sem-core-badge">HOLDING</span>
           </div>
           <div class="sem-core-info">
@@ -482,6 +477,7 @@ const branches: MapBranch[] = [
   stroke: var(--gold);
   stroke-width: 1.5;
   stroke-opacity: 0.45;
+  stroke-linecap: round;
   fill: none;
 }
 
@@ -504,6 +500,7 @@ const branches: MapBranch[] = [
   stroke: var(--border);
   stroke-width: 1.25;
   stroke-opacity: 0.85;
+  stroke-linecap: round;
   fill: none;
   transition: stroke 0.2s ease, stroke-width 0.2s ease, stroke-opacity 0.2s ease;
 }
@@ -536,7 +533,7 @@ const branches: MapBranch[] = [
 .sem-core-box {
   background-color: var(--card-bg);
   border: 2px solid var(--gold);
-  border-radius: 10px;
+  border-radius: 16px;
   padding: 1.2rem 1.6rem;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   display: flex;
@@ -550,19 +547,13 @@ const branches: MapBranch[] = [
   justify-content: space-between;
 }
 
-.sem-core-monogram {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.sem-core-logo {
   width: 36px;
   height: 36px;
-  background-color: #C9A84C;
-  color: #0A0A0A;
-  font-family: var(--fd);
-  font-weight: 800;
-  font-size: 0.85rem;
-  border-radius: 6px;
-  letter-spacing: 0.04em;
+  border-radius: 8px;
+  object-fit: cover;
+  display: block;
+  background: #fff;
 }
 
 .sem-core-badge {
@@ -611,7 +602,7 @@ const branches: MapBranch[] = [
 .sem-branch-box {
   background-color: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 0.85rem 1.15rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
   transition: transform 0.15s ease, border-color 0.15s ease;
@@ -655,7 +646,7 @@ const branches: MapBranch[] = [
 .sem-leaf-box {
   background-color: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 14px;
   padding: 0.85rem 1rem;
   display: flex;
   flex-direction: column;

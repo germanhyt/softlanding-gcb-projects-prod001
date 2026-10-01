@@ -224,7 +224,11 @@ const scriptData = JSON.stringify(
   <footer class="ft">
     <div class="ft-in">
       <p>© {new Date().getFullYear()} Grupo Cordillera Blanca SA · Todos los derechos reservados</p>
-      <a href="/variant" class="ft-link">Variante 3D</a>
+      <nav class="ft-nav" aria-label="Variantes del portal">
+        <a href="/presentacion" class="ft-link">Presentación</a>
+        <span class="ft-sep" aria-hidden="true">·</span>
+        <a href="/variant" class="ft-link">Variante 3D</a>
+      </nav>
     </div>
   </footer>
 
@@ -848,6 +852,8 @@ html.dark .cbody {
 .ft p { font-size: 0.68rem; color: var(--dim); margin: 0; }
 .ft-link { font-size: 0.68rem; color: var(--gold); text-decoration: none; transition: opacity 0.2s, text-decoration 0.2s; }
 .ft-link:hover { opacity: 0.7; text-decoration: underline; }
+.ft-nav { display: flex; align-items: center; gap: 0.5rem; }
+.ft-sep { font-size: 0.68rem; color: var(--dim); }
 
 /* ── Responsive breakpoints ────────────────────────── */
 @media (max-width: 767px) {
