@@ -32,6 +32,24 @@ interface MapBranch {
 const CX = 720;
 const CY = 470;
 
+/* Semitamaños (ancho/alto / 2 + margen) para recortar los conectores al ras
+   de cada nodo: la línea llega al borde, nunca traspasa la tarjeta. */
+const HUB_HALF = { hw: 175, hh: 95 };
+const BRANCH_HALF = { hw: 120, hh: 70 };
+const LEAF_HALF = { hw: 145, hh: 122 };
+
+/** Punto sobre el borde de una elipse (cx,cy,hw,hh) en la dirección (dx,dy). */
+function edgePoint(
+  cx: number, cy: number, hw: number, hh: number,
+  dx: number, dy: number, gap = 10,
+): { x: number; y: number } {
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  const t = 1 / Math.sqrt((ux / hw) ** 2 + (uy / hh) ** 2) + gap;
+  return { x: cx + ux * t, y: cy + uy * t };
+}
+
 /* Layout del lienzo: lo único propio del mapa son las coordenadas x/y.
    Todo el contenido (nombre, desc, URL, badge, tag, domain, icono) viene de
    src/data/projects.ts — single source of truth (ver DESIGN.md). */
@@ -115,6 +133,41 @@ const branches: MapBranch[] = [
     leaves: branchLeafIds['b-infra']!.map(leafFromProject),
   },
 ];
+
+const f1 = (n: number) => +n.toFixed(1);
+
+/* Conectores recortados al borde de cada nodo (nunca traspasan tarjetas) */
+interface LineDef {
+  id: string;
+  d: string;
+  accent?: string;
+  parent?: string;
+}
+
+const level1Lines: LineDef[] = branches.map((b) => {
+  const p1 = edgePoint(CX, CY, HUB_HALF.hw, HUB_HALF.hh, b.x - CX, b.y - CY);
+  const p2 = edgePoint(b.x, b.y, BRANCH_HALF.hw, BRANCH_HALF.hh, CX - b.x, CY - b.y);
+  return {
+    id: b.id,
+    d: `M ${f1(p1.x)} ${f1(p1.y)} L ${f1(p2.x)} ${f1(p2.y)}`,
+  };
+});
+
+const level2Lines: LineDef[] = branches.flatMap((b) =>
+  b.leaves.map((leaf) => {
+    const dx = leaf.x - b.x;
+    const dy = leaf.y - b.y;
+    const s = edgePoint(b.x, b.y, BRANCH_HALF.hw, BRANCH_HALF.hh, dx, dy);
+    const e = edgePoint(leaf.x, leaf.y, LEAF_HALF.hw, LEAF_HALF.hh, -dx, -dy);
+    const mx = e.x - s.x;
+    return {
+      id: leaf.id,
+      d: `M ${f1(s.x)} ${f1(s.y)} C ${f1(s.x + mx * 0.55)} ${f1(s.y)}, ${f1(e.x - mx * 0.55)} ${f1(e.y)}, ${f1(e.x)} ${f1(e.y)}`,
+      accent: b.accent,
+      parent: b.id,
+    };
+  }),
+);
 ---
 
 <div class="sem-container" id="semantic-map-root">
@@ -168,40 +221,35 @@ const branches: MapBranch[] = [
 
         <rect width="1440" height="940" fill="url(#sem-ambient)" />
 
-        <!-- ── LÍNEAS NIVEL 1: CENTRO -> PILARES ── -->
-        {branches.map(b => (
-          <g class="path-group" id={`group-line-${b.id}`}>
+        <!-- ── LÍNEAS NIVEL 1: CENTRO -> PILARES (al ras de cada nodo) ── -->
+        {level1Lines.map((l) => (
+          <g class="path-group" id={`group-line-${l.id}`}>
             <!-- Línea base -->
             <path
-              d={`M ${CX} ${CY} L ${b.x} ${b.y}`}
+              d={l.d}
               class="sem-line-main"
-              id={`line-${b.id}`}
+              id={`line-${l.id}`}
             />
             <!-- Línea animada de pulso de datos -->
             <path
-              d={`M ${CX} ${CY} L ${b.x} ${b.y}`}
+              d={l.d}
               class="sem-line-pulse"
             />
           </g>
         ))}
 
         <!-- ── LÍNEAS NIVEL 2: PILARES -> SISTEMAS (curvas en S con el color del pilar) ── -->
-        {branches.flatMap(b => b.leaves.map(leaf => {
-          const dx = leaf.x - b.x;
-          const d = `M ${b.x} ${b.y} C ${b.x + dx * 0.55} ${b.y}, ${leaf.x - dx * 0.55} ${leaf.y}, ${leaf.x} ${leaf.y}`;
-
-          return (
-            <g class="path-group" id={`group-line-${leaf.id}`}>
-              <path
-                d={d}
-                class="sem-line-sub"
-                stroke={b.accent}
-                id={`line-${leaf.id}`}
-                data-parent={`line-${b.id}`}
-              />
-            </g>
-          );
-        }))}
+        {level2Lines.map((l) => (
+          <g class="path-group" id={`group-line-${l.id}`}>
+            <path
+              d={l.d}
+              class="sem-line-sub"
+              stroke={l.accent}
+              id={`line-${l.id}`}
+              data-parent={`line-${l.parent}`}
+            />
+          </g>
+        ))}
       </svg>
 
       <!-- ════ NODO 1: EMPRESA CENTRAL ════ -->
@@ -1112,15 +1160,18 @@ const branches: MapBranch[] = [
   document.addEventListener('astro:page-load', setupSemanticMap);
 
   /* ── Fit del tablero: escala 1440×940 al ancho real para que las
-     líneas SVG y las tarjetas px siempre coincidan ── */
+     líneas SVG y las tarjetas px siempre coincidan. Además se limita por
+     alto (74svh) para que la sección cuadre en pantalla, centrando el
+     lienzo cuando sobra ancho. ── */
   function fitBoard() {
     const wrapper = document.getElementById('sem-board-wrapper');
     const board = document.getElementById('sem-board');
     if (!wrapper || !board) return;
     const w = wrapper.clientWidth;
     if (!w) return;
-    const s = Math.min(w / 1440, 1);
+    const s = Math.min(w / 1440, (window.innerHeight * 0.74) / 940, 1);
     board.style.transform = `scale(${s})`;
+    board.style.marginLeft = `${Math.max(0, (w - 1440 * s) / 2)}px`;
     wrapper.style.height = `${Math.round(940 * s)}px`;
   }
   const boardWrapper = document.getElementById('sem-board-wrapper');

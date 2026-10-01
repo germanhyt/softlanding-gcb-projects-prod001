@@ -118,16 +118,17 @@ import Footer from '../components/variant/Footer.astro';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (!reduced) {
-    // Portada: parallax de salida (el contenido se eleva y disuelve al scrollear)
+    // Portada: salida sedosa mientras el mapa la cubre (sube, se achica y disuelve)
     gsap.to('#pres-hero-content', {
       yPercent: -14,
-      opacity: 0.15,
+      scale: 0.96,
+      opacity: 0.1,
       ease: 'none',
       scrollTrigger: {
         trigger: '#pres-hero',
         start: 'top top',
         end: 'bottom top',
-        scrub: true,
+        scrub: 0.6,
       },
     });
 
@@ -137,7 +138,7 @@ import Footer from '../components/variant/Footer.astro';
       y: 90,
       opacity: 0,
       scale: 0.97,
-      duration: 1,
+      duration: 1.2,
       ease: 'power3.out',
       scrollTrigger: {
         trigger: '#pres-map',
