@@ -93,16 +93,26 @@ import SemanticMap from '../components/SemanticMap.astro';
     color: var(--color-variant-gold);
     border-color: var(--color-variant-border-strong);
   }
+  /* Snap suave: si el scroll queda a medias, la sección más cercana se asienta sola */
+  html {
+    scroll-snap-type: y proximity;
+  }
   /* Sticky scroll: la portada queda fija y el mapa la cubre como otra página */
   .pres-hero {
     position: sticky;
     top: 0;
     height: 100svh;
     z-index: 1;
+    scroll-snap-align: start;
   }
   .pres-map {
     position: relative;
     z-index: 10;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-snap-align: start;
     background-color: var(--color-variant-bg);
     border-top: 1px solid var(--color-variant-border);
     box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.55);
@@ -129,7 +139,7 @@ import SemanticMap from '../components/SemanticMap.astro';
   }
   @media (prefers-reduced-motion: reduce) {
     .pres-scroll-chevron { animation: none; }
-    html { scroll-behavior: auto; }
+    html { scroll-behavior: auto; scroll-snap-type: none; }
   }
 </style>
 

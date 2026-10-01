@@ -1,6 +1,7 @@
 ---
 import { planetDefs } from '../data/projects.ts';
 import { icons } from '../data/icons.ts';
+import { MAP_CENTER, branchPositions, leafPositions } from '../data/map-layout.ts';
 
 /* ── Estructura de Datos para el Mapa Semántico Corporativo ── */
 interface MapLeaf {
@@ -28,9 +29,10 @@ interface MapBranch {
   leaves: MapLeaf[];
 }
 
-/* Coordenadas en un lienzo expandido de 1440 × 940 */
-const CX = 720;
-const CY = 470;
+/* Coordenadas en un lienzo expandido de 1440 × 940.
+   El layout vive en src/data/map-layout.ts (ver DESIGN.md). */
+const CX = MAP_CENTER.x;
+const CY = MAP_CENTER.y;
 
 /* Semitamaños (ancho/alto / 2 + margen) para recortar los conectores al ras
    de cada nodo: la línea llega al borde, nunca traspasa la tarjeta. */
@@ -50,21 +52,10 @@ function edgePoint(
   return { x: cx + ux * t, y: cy + uy * t };
 }
 
-/* Layout del lienzo: lo único propio del mapa son las coordenadas x/y.
-   Todo el contenido (nombre, desc, URL, badge, tag, domain, icono) viene de
-   src/data/projects.ts — single source of truth (ver DESIGN.md). */
-const leafLayout: Record<string, { x: number; y: number }> = {
-  'p-proc':   { x: 170,  y: 130 },
-  'p-del':    { x: 190,  y: 350 },
-  'p-com':    { x: 190,  y: 570 },
-  'p-docgcb': { x: 170,  y: 790 },
-  'p-kiosk':  { x: 1260, y: 250 },
-  'p-runner': { x: 1240, y: 470 },
-  'p-agenda': { x: 1260, y: 690 },
-  'p-ai':     { x: 950,  y: 170 },
-  'p-est':    { x: 580,  y: 815 },
-  'p-conc':   { x: 860,  y: 815 },
-};
+/* Layout del lienzo: lo único propio del mapa son las coordenadas x/y
+   (importadas de map-layout.ts). Todo el contenido (nombre, desc, URL,
+   badge, tag, domain, icono) viene de src/data/projects.ts. */
+const leafLayout = leafPositions;
 
 const branchLeafIds: Record<string, string[]> = {
   'b-refugio':  ['p-proc', 'p-del', 'p-com', 'p-docgcb'],
@@ -97,8 +88,7 @@ const branches: MapBranch[] = [
     title: 'Refugio Data',
     desc: 'Operaciones & Gestión Core',
     category: 'Analítica Operativa',
-    x: 450,
-    y: 470,
+    ...branchPositions['b-refugio'],
     accent: '#C9A84C',
     leaves: branchLeafIds['b-refugio']!.map(leafFromProject),
   },
@@ -107,8 +97,7 @@ const branches: MapBranch[] = [
     title: 'Canales & Despacho',
     desc: 'Venta Directa & Movilidad',
     category: 'Puntos de Venta',
-    x: 990,
-    y: 470,
+    ...branchPositions['b-channels'],
     accent: '#3CC9A4',
     leaves: branchLeafIds['b-channels']!.map(leafFromProject),
   },
@@ -117,8 +106,7 @@ const branches: MapBranch[] = [
     title: 'Inteligencia de Datos',
     desc: 'Modelos de Lenguaje & Análisis',
     category: 'Analítica Avanzada',
-    x: 720,
-    y: 250,
+    ...branchPositions['b-ai'],
     accent: '#4A9EFF',
     leaves: branchLeafIds['b-ai']!.map(leafFromProject),
   },
@@ -127,8 +115,7 @@ const branches: MapBranch[] = [
     title: 'Infraestructura & Finanzas',
     desc: 'Operaciones Físicas y Tesorería',
     category: 'Sistemas Soporte',
-    x: 720,
-    y: 640,
+    ...branchPositions['b-infra'],
     accent: '#9B6DFF',
     leaves: branchLeafIds['b-infra']!.map(leafFromProject),
   },
@@ -205,6 +192,9 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       <span id="sem-count-display">10 / 10 Sistemas Conectados</span>
       <button id="sem-reset-layout" class="sem-reset-btn" title="Restablecer posiciones del mapa base" aria-label="Restablecer posiciones del mapa">
         Restablecer
+      </button>
+      <button id="sem-copy-layout" class="sem-reset-btn" title="Copiar el layout actual como JSON para pegarlo en src/data/map-layout.ts" aria-label="Copiar layout actual como JSON">
+        Copiar layout
       </button>
     </div>
   </div>
@@ -1435,6 +1425,46 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       nodes.forEach((n, id) => {
         if (n.kind === 'branch') layoutNode(id);
       });
+    });
+
+    // Copiar el layout actual como JSON listo para src/data/map-layout.ts
+    const copyBtn = document.getElementById('sem-copy-layout') as HTMLButtonElement | null;
+    copyBtn?.addEventListener('click', async () => {
+      const branchPos: Record<string, { x: number; y: number }> = {};
+      const leafPos: Record<string, { x: number; y: number }> = {};
+      nodes.forEach((n, id) => {
+        const p = { x: Math.round(n.x), y: Math.round(n.y) };
+        if (n.kind === 'branch') branchPos[id] = p;
+        else if (n.kind === 'leaf') leafPos[id] = p;
+      });
+      const payload =
+        `export const branchPositions: Record<string, NodePosition> = ${JSON.stringify(branchPos, null, 2)};\n\n` +
+        `export const leafPositions: Record<string, NodePosition> = ${JSON.stringify(leafPos, null, 2)};`;
+      let ok = false;
+      try {
+        await navigator.clipboard.writeText(payload);
+        ok = true;
+      } catch {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = payload;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          ok = document.execCommand('copy');
+          ta.remove();
+        } catch {
+          ok = false;
+        }
+      }
+      if (copyBtn) {
+        const original = 'Copiar layout';
+        copyBtn.textContent = ok ? '¡Copiado! Pegalo en map-layout.ts' : 'No se pudo copiar';
+        window.setTimeout(() => {
+          copyBtn.textContent = original;
+        }, 2500);
+      }
     });
   })();
 </script>
