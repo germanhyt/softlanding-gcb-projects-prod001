@@ -13,10 +13,11 @@
   },
   "dependencies": {
     "@astrojs/react": "^5.0.3",
-    "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.2",
     "@fontsource/manrope": "^5.2.8",
     "@fontsource/work-sans": "^5.2.8",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.2.2",
+    "@xyflow/react": "^12.11.6",
     "astro": "^6.1.6",
     "autoprefixer": "^10.4.27",
     "framer-motion": "^12.38.0",
@@ -24,8 +25,8 @@
     "postcss": "^8.5.9",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "three": "^0.185.1",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.2.2",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@types/three": "^0.185.4"

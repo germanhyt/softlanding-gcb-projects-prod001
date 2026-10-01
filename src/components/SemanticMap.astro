@@ -1,0 +1,1102 @@
+---
+import { planetDefs } from '../data/projects.ts';
+
+/* ── Estructura de Datos para el Mapa Semántico Corporativo ── */
+interface MapLeaf {
+  id: string;
+  name: string;
+  sub: string;
+  desc: string;
+  href: string;
+  domain: string;
+  icon: string;
+  tag: string;
+  x: number;
+  y: number;
+  badge: string;
+}
+
+interface MapBranch {
+  id: string;
+  title: string;
+  desc: string;
+  category: string;
+  x: number;
+  y: number;
+  accent: string;
+  leaves: MapLeaf[];
+}
+
+const icons: Record<string, string> = {
+  db: `<ellipse cx="12" cy="6" rx="9" ry="3"/><path d="M3 6v4c0 1.66 4 3 9 3s9-1.34 9-3V6"/><path d="M3 10v4c0 1.66 4 3 9 3s9-1.34 9-3v-4"/><path d="M3 14v4c0 1.66 4 3 9 3s9-1.34 9-3v-4"/>`,
+  refugio: `<path d="M3 10.5L12 4l9 6.5V20a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1V10.5z"/><path d="M8 21V13h8v8"/>`,
+  truck: `<path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3"/><polygon points="16 3 21 8 21 17 16 17 16 3"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><line x1="9" y1="17" x2="15" y2="17"/>`,
+  chart: `<rect x="2" y="14" width="4" height="7" rx="1"/><rect x="9" y="9" width="4" height="12" rx="1"/><rect x="16" y="4" width="4" height="17" rx="1"/>`,
+  doc: `<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>`,
+  park: `<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 010 6H9"/>`,
+  screen: `<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>`,
+  play: `<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>`,
+  ai: `<path d="M9.663 17h4.674M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>`,
+  bal: `<line x1="12" y1="3" x2="12" y2="21"/><path d="M7 5H3l-1 9h6L7 5z"/><path d="M17 5h4l1 9h-6l1-9z"/><line x1="2" y1="21" x2="22" y2="21"/>`,
+  cal: `<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>`,
+};
+
+/* Coordenadas en un lienzo expandido de 1440 × 940 */
+const CX = 720;
+const CY = 470;
+
+const branches: MapBranch[] = [
+  {
+    id: 'b-refugio',
+    title: 'Refugio Data',
+    desc: 'Operaciones & Gestión Core',
+    category: 'Analítica Operativa',
+    x: 420,
+    y: 470,
+    accent: '#C9A84C',
+    leaves: [
+      { id: 'p-proc', name: 'Refugio Data', sub: 'Procesamiento BI', desc: 'Consolidación de ventas e informes de gestión', href: 'https://datarefugio.gcbprojects.site/legacy', domain: 'datarefugio.gcbprojects.site', icon: 'refugio', tag: 'Core BI', badge: 'PROD', x: 155, y: 260 },
+      { id: 'p-del', name: 'Módulo Delivery', sub: 'Seguimiento en Vivo', desc: 'Monitoreo de pedidos y tiempos de despacho', href: 'https://datarefugio.gcbprojects.site/delivery', domain: 'datarefugio.gcbprojects.site', icon: 'truck', tag: 'Logística', badge: 'LIVE', x: 135, y: 400 },
+      { id: 'p-com', name: 'Módulo Comercial', sub: 'Reservas & Eventos', desc: 'CRM corporativo, cotizaciones y agenda', href: 'https://datarefugio.gcbprojects.site/comercial', domain: 'datarefugio.gcbprojects.site', icon: 'chart', tag: 'Comercial', badge: 'CRM', x: 135, y: 540 },
+      { id: 'p-docgcb', name: 'Documentación GCB', sub: 'Normativa & Procesos', desc: 'Repositorio corporativo de políticas y manuales', href: 'https://datarefugio.gcbprojects.site/documentos-gcb', domain: 'datarefugio.gcbprojects.site', icon: 'doc', tag: 'Gestión', badge: 'DOCS', x: 155, y: 680 },
+    ],
+  },
+  {
+    id: 'b-channels',
+    title: 'Canales & Despacho',
+    desc: 'Venta Directa & Movilidad',
+    category: 'Puntos de Venta',
+    x: 1020,
+    y: 470,
+    accent: '#3CC9A4',
+    leaves: [
+      { id: 'p-kiosk', name: 'Web Kiosko', sub: 'Punto de Venta Salón', desc: 'Terminal web de autoservicio para salón', href: 'https://kiosk.datarefugio.gcbprojects.site/', domain: 'kiosk.datarefugio.gcbprojects.site', icon: 'screen', tag: 'POS Web', badge: 'SALÓN', x: 1285, y: 330 },
+      { id: 'p-runner', name: 'App Runner', sub: 'Aplicación Móvil', desc: 'Despacho de última milla para operarios', href: 'https://expo.dev/accounts/refugdata/projects/runner/builds/a6e38cfb-6bf2-4353-a639-e92daeac7836', domain: 'expo.dev', icon: 'play', tag: 'Mobile', badge: 'APK', x: 1305, y: 470 },
+      { id: 'p-agenda', name: 'Agenda Deportiva', sub: 'Cartelera Oficial', desc: 'Calendario y transmisiones de eventos', href: 'https://softlanding-calendario-deportivo-gc-xi.vercel.app/', domain: 'vercel.app', icon: 'cal', tag: 'Eventos', badge: 'WEB', x: 1285, y: 610 },
+    ],
+  },
+  {
+    id: 'b-ai',
+    title: 'Inteligencia de Datos',
+    desc: 'Modelos de Lenguaje & Análisis',
+    category: 'Analítica Avanzada',
+    x: 720,
+    y: 250,
+    accent: '#4A9EFF',
+    leaves: [
+      { id: 'p-ai', name: 'Consultas GCB con AI', sub: 'Asistente Empresarial', desc: 'Consultas en lenguaje natural de métricas operativas', href: 'https://consultas.gcbprojects.site/', domain: 'consultas.gcbprojects.site', icon: 'ai', tag: 'AI Engine', badge: 'CLOUD', x: 720, y: 110 },
+    ],
+  },
+  {
+    id: 'b-infra',
+    title: 'Infraestructura & Finanzas',
+    desc: 'Operaciones Físicas y Tesorería',
+    category: 'Sistemas Soporte',
+    x: 720,
+    y: 690,
+    accent: '#9B6DFF',
+    leaves: [
+      { id: 'p-est', name: 'Estacionamiento', sub: 'Control de Acceso', desc: 'Gestión de aforo vehicular y facturación', href: 'https://estacionamiento.gcbprojects.site/', domain: 'estacionamiento.gcbprojects.site', icon: 'park', tag: 'Acceso', badge: 'PROD', x: 500, y: 830 },
+      { id: 'p-conc', name: 'Conciliación', sub: 'Auditoría Bancaria', desc: 'Liquidación de tarjetas y conciliación contable', href: 'https://conciliacion.gcbprojects.site/', domain: 'conciliacion.gcbprojects.site', icon: 'bal', tag: 'Finanzas', badge: 'FINTECH', x: 940, y: 830 },
+    ],
+  },
+];
+---
+
+<div class="sem-container" id="semantic-map-root">
+  <!-- ════════════════ BARRA DE CONTROL CORPORATIVA ════════════════ -->
+  <div class="sem-toolbar">
+    <!-- Buscador Integrado en el Mapa -->
+    <div class="sem-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input
+        type="text"
+        id="sem-search-input"
+        class="sem-search-input"
+        placeholder="Filtrar sistemas o presiona '/'..."
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <kbd class="sem-kbd">/</kbd>
+      <button id="sem-clear-search" class="sem-clear-btn" style="display: none;" aria-label="Limpiar">✕</button>
+    </div>
+
+    <!-- Filtros de Ramas / Pilares -->
+    <div class="sem-pills">
+      <button class="sem-pill is-active" data-branch="all">Todas las ramas</button>
+      <button class="sem-pill" data-branch="b-refugio">Refugio Data</button>
+      <button class="sem-pill" data-branch="b-channels">Canales & Despacho</button>
+      <button class="sem-pill" data-branch="b-ai">Inteligencia AI</button>
+      <button class="sem-pill" data-branch="b-infra">Infraestructura</button>
+    </div>
+
+    <!-- Contador de Sistemas -->
+    <div class="sem-status-box">
+      <span class="sem-dot-live"></span>
+      <span id="sem-count-display">10 / 10 Sistemas Conectados</span>
+    </div>
+  </div>
+
+  <!-- ════════════════ LIENZO INTERACTIVO (DESKTOP) ════════════════ -->
+  <div class="sem-board-wrapper" id="sem-board-wrapper">
+    <div class="sem-board" id="sem-board">
+      <svg class="sem-svg" viewBox="0 0 1440 940" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <!-- Patrón de cuadrícula tenue de ingeniería corporativa -->
+          <pattern id="grid-dots" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="20" cy="20" r="1" fill="var(--border)" opacity="0.45" />
+          </pattern>
+        </defs>
+
+        <rect width="1440" height="940" fill="url(#grid-dots)" />
+
+        <!-- ── LÍNEAS NIVEL 1: CENTRO -> PILARES ── -->
+        {branches.map(b => (
+          <g class="path-group" id={`group-line-${b.id}`}>
+            <!-- Línea base -->
+            <path
+              d={`M ${CX} ${CY} L ${b.x} ${b.y}`}
+              class="sem-line-main"
+              id={`line-${b.id}`}
+            />
+            <!-- Línea animada de pulso de datos -->
+            <path
+              d={`M ${CX} ${CY} L ${b.x} ${b.y}`}
+              class="sem-line-pulse"
+            />
+          </g>
+        ))}
+
+        <!-- ── LÍNEAS NIVEL 2: PILARES -> SISTEMAS (CURVAS BÉZIER) ── -->
+        {branches.flatMap(b => b.leaves.map(leaf => {
+          let d = '';
+          if (b.id === 'b-refugio' || b.id === 'b-channels') {
+            const cpX = (b.x + leaf.x) / 2;
+            d = `M ${b.x} ${b.y} C ${cpX} ${b.y}, ${cpX} ${leaf.y}, ${leaf.x} ${leaf.y}`;
+          } else {
+            const cpY = (b.y + leaf.y) / 2;
+            d = `M ${b.x} ${b.y} C ${b.x} ${cpY}, ${leaf.x} ${cpY}, ${leaf.x} ${leaf.y}`;
+          }
+
+          return (
+            <g class="path-group" id={`group-line-${leaf.id}`}>
+              <path
+                d={d}
+                class="sem-line-sub"
+                id={`line-${leaf.id}`}
+                data-parent={`line-${b.id}`}
+              />
+            </g>
+          );
+        }))}
+      </svg>
+
+      <!-- ════ NODO 1: EMPRESA CENTRAL ════ -->
+      <div class="sem-node sem-core" style={`left:${CX}px; top:${CY}px;`} id="node-center-holding">
+        <div class="sem-core-box">
+          <div class="sem-core-top">
+            <span class="sem-core-monogram">GCB</span>
+            <span class="sem-core-badge">HOLDING</span>
+          </div>
+          <div class="sem-core-info">
+            <span class="sem-core-eyebrow">EMPRESA MATRIZ</span>
+            <h1 class="sem-core-title">Grupo Cordillera Blanca S.A.</h1>
+            <p class="sem-core-desc">Centro Neurálgico & Gobernanza de Sistemas</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ NODOS 2: PILARES ESTRATÉGICOS (RAMAS) ════ -->
+      {branches.map(b => (
+        <div
+          class="sem-node sem-branch"
+          style={`left:${b.x}px; top:${b.y}px;`}
+          id={b.id}
+          data-branch-id={b.id}
+        >
+          <div class="sem-branch-box" style={`border-top: 3px solid ${b.accent};`}>
+            <span class="sem-branch-cat">{b.category}</span>
+            <h2 class="sem-branch-title">{b.title}</h2>
+            <span class="sem-branch-meta">{b.leaves.length} aplicaciones conectadas</span>
+          </div>
+        </div>
+      ))}
+
+      <!-- ════ NODOS 3: SISTEMAS / PLATAFORMAS (HOJAS) ════ -->
+      {branches.flatMap(b => b.leaves.map(leaf => (
+        <a
+          href={leaf.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="sem-node sem-leaf"
+          style={`left:${leaf.x}px; top:${leaf.y}px;`}
+          id={leaf.id}
+          data-branch={b.id}
+          data-keywords={`${leaf.name} ${leaf.sub} ${leaf.desc} ${leaf.domain} ${leaf.tag} ${leaf.badge}`.toLowerCase()}
+        >
+          <div class="sem-leaf-box">
+            <div class="sem-leaf-head">
+              <div class="sem-leaf-ico" set:html={icons[leaf.icon]} />
+              <div class="sem-leaf-badges">
+                <span class="sem-leaf-tag">{leaf.tag}</span>
+                <span class="sem-leaf-badge">{leaf.badge}</span>
+              </div>
+            </div>
+
+            <div class="sem-leaf-body">
+              <div class="sem-leaf-name-row">
+                <h3 class="sem-leaf-name">{leaf.name}</h3>
+                <span class="sem-leaf-arrow" aria-hidden="true">↗</span>
+              </div>
+              <p class="sem-leaf-desc">{leaf.desc}</p>
+            </div>
+
+            <div class="sem-leaf-foot">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>{leaf.domain}</span>
+            </div>
+          </div>
+        </a>
+      )))}
+    </div>
+  </div>
+
+  <!-- ════════════════ VISTA MÓVIL (ÁRBOL SEMÁNTICO EN CASCADA) ════════════════ -->
+  <div class="sem-mobile-view">
+    <div class="sem-mob-core">
+      <div class="sem-mob-monogram">GCB</div>
+      <div>
+        <span class="sem-mob-kicker">MATRIZ EMPRESARIAL</span>
+        <h2 class="sem-mob-h2">Grupo Cordillera Blanca S.A.</h2>
+        <span class="sem-mob-meta">10 Sistemas y Módulos Activos</span>
+      </div>
+    </div>
+
+    <div class="sem-mob-tree">
+      {branches.map(b => (
+        <details class="sem-mob-branch" open>
+          <summary class="sem-mob-branch-sum" style={`border-left: 3px solid ${b.accent};`}>
+            <div>
+              <span class="sem-mob-branch-cat">{b.category}</span>
+              <h3 class="sem-mob-branch-title">{b.title}</h3>
+            </div>
+            <span class="sem-mob-branch-count">{b.leaves.length}</span>
+          </summary>
+
+          <div class="sem-mob-leaves">
+            {b.leaves.map(leaf => (
+              <a href={leaf.href} target="_blank" rel="noopener noreferrer" class="sem-mob-leaf">
+                <div class="sem-mob-leaf-ico" set:html={icons[leaf.icon]} />
+                <div class="sem-mob-leaf-info">
+                  <div class="sem-mob-leaf-top">
+                    <span class="sem-mob-leaf-title">{leaf.name}</span>
+                    <span class="sem-mob-leaf-tag">{leaf.badge}</span>
+                  </div>
+                  <p class="sem-mob-leaf-desc">{leaf.desc}</p>
+                  <span class="sem-mob-leaf-url">{leaf.domain}</span>
+                </div>
+                <span class="sem-mob-leaf-arr">↗</span>
+              </a>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
+  </div>
+</div>
+
+<style>
+/* ── Estructura Base ───────────────────────────────── */
+.sem-container {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Barra de Control Superior ─────────────────────── */
+.sem-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.65rem 1rem;
+}
+
+.sem-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+}
+
+.sem-search svg {
+  position: absolute;
+  left: 0.8rem;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.sem-search-input {
+  width: 100%;
+  height: 36px;
+  padding: 0 2.5rem 0 2.3rem;
+  font-family: var(--fb);
+  font-size: 0.8rem;
+  color: var(--text);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.sem-search-input:focus {
+  border-color: var(--gold);
+}
+
+.sem-kbd {
+  position: absolute;
+  right: 0.75rem;
+  font-family: monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.sem-clear-btn {
+  position: absolute;
+  right: 0.65rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.sem-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.sem-pill {
+  font-family: var(--fb);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sem-pill:hover {
+  color: var(--text);
+  border-color: var(--gold-border);
+}
+
+.sem-pill.is-active {
+  background-color: var(--text);
+  color: var(--bg);
+  border-color: var(--text);
+  font-weight: 600;
+}
+
+.sem-status-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--fb);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.sem-dot-live {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #15803D;
+}
+
+/* ── Lienzo SVG de Escritorio ──────────────────────── */
+.sem-board-wrapper {
+  position: relative;
+  width: 100%;
+  height: 940px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.sem-board {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.sem-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Líneas de Conexión */
+.sem-line-main {
+  stroke: var(--gold);
+  stroke-width: 1.5;
+  stroke-opacity: 0.45;
+  fill: none;
+}
+
+.sem-line-pulse {
+  stroke: var(--gold);
+  stroke-width: 2.5;
+  stroke-dasharray: 8 28;
+  stroke-linecap: round;
+  fill: none;
+  animation: pulseMove 3s linear infinite;
+  opacity: 0.85;
+}
+
+@keyframes pulseMove {
+  from { stroke-dashoffset: 72; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.sem-line-sub {
+  stroke: var(--border);
+  stroke-width: 1.25;
+  stroke-opacity: 0.85;
+  fill: none;
+  transition: stroke 0.2s ease, stroke-width 0.2s ease, stroke-opacity 0.2s ease;
+}
+
+.sem-line-sub.is-highlighted {
+  stroke: var(--gold) !important;
+  stroke-width: 2.5px !important;
+  stroke-opacity: 1 !important;
+}
+
+/* Nodos Base */
+.sem-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sem-node.is-dimmed {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* ── 1. NODO CENTRAL: GRUPO CORDILLERA BLANCA ──────── */
+.sem-core {
+  min-width: 300px;
+  cursor: default;
+}
+
+.sem-core-box {
+  background-color: var(--card-bg);
+  border: 2px solid var(--gold);
+  border-radius: 10px;
+  padding: 1.2rem 1.6rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.sem-core-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sem-core-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: #C9A84C;
+  color: #0A0A0A;
+  font-family: var(--fd);
+  font-weight: 800;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+
+.sem-core-badge {
+  font-family: monospace;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--gold);
+  background-color: var(--surface);
+  border: 1px solid var(--gold-border);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.sem-core-eyebrow {
+  font-family: var(--fb);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+  display: block;
+}
+
+.sem-core-title {
+  font-family: var(--fd);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0.15rem 0 0.2rem;
+  line-height: 1.2;
+}
+
+.sem-core-desc {
+  font-family: var(--fb);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ── 2. NODOS INTERMEDIOS: PILARES DE NEGOCIO ──────── */
+.sem-branch {
+  min-width: 200px;
+  cursor: pointer;
+}
+
+.sem-branch-box {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1.15rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.sem-branch:hover .sem-branch-box {
+  transform: translateY(-2px);
+  border-color: var(--gold);
+}
+
+.sem-branch-cat {
+  font-family: var(--fb);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: block;
+}
+
+.sem-branch-title {
+  font-family: var(--fd);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0.2rem 0;
+}
+
+.sem-branch-meta {
+  font-family: var(--fb);
+  font-size: 0.68rem;
+  color: var(--dim);
+}
+
+/* ── 3. NODOS HOJA: SISTEMAS INDIVIDUALES ───────────── */
+.sem-leaf {
+  width: 260px;
+  text-decoration: none;
+}
+
+.sem-leaf-box {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.sem-leaf:hover .sem-leaf-box {
+  transform: translateY(-3px);
+  border-color: var(--gold);
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.sem-leaf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sem-leaf-ico {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sem-leaf-ico :global(svg) {
+  width: 16px;
+  height: 16px;
+}
+
+.sem-leaf-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.sem-leaf-tag {
+  font-family: var(--fb);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--muted);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 0.12rem 0.4rem;
+  border-radius: 3px;
+}
+
+.sem-leaf-badge {
+  font-family: monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  color: #15803D;
+  background: rgba(21, 128, 61, 0.08);
+  border: 1px solid rgba(21, 128, 61, 0.2);
+  padding: 0.12rem 0.35rem;
+  border-radius: 3px;
+}
+
+.sem-leaf-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.sem-leaf-name {
+  font-family: var(--fd);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  transition: color 0.15s ease;
+}
+
+.sem-leaf:hover .sem-leaf-name {
+  color: var(--gold);
+}
+
+.sem-leaf-arrow {
+  font-size: 0.85rem;
+  color: var(--dim);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.sem-leaf:hover .sem-leaf-arrow {
+  color: var(--gold);
+  transform: translate(2px, -2px);
+}
+
+.sem-leaf-desc {
+  font-family: var(--fb);
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.4;
+  margin: 0.15rem 0 0;
+}
+
+.sem-leaf-foot {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.55rem;
+  font-family: monospace;
+  font-size: 0.65rem;
+  color: var(--dim);
+}
+
+/* ── Vista Móvil ───────────────────────────────────── */
+.sem-mobile-view {
+  display: none;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.sem-mob-core {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 1.15rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.sem-mob-monogram {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  background-color: #C9A84C;
+  color: #0A0A0A;
+  font-family: var(--fd);
+  font-size: 0.85rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sem-mob-kicker {
+  font-family: var(--fb);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.sem-mob-h2 {
+  font-family: var(--fd);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.sem-mob-meta {
+  font-family: var(--fb);
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.sem-mob-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sem-mob-branch {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sem-mob-branch-sum {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  cursor: pointer;
+  list-style: none;
+  background-color: var(--card-bg);
+}
+
+.sem-mob-branch-sum::-webkit-details-marker {
+  display: none;
+}
+
+.sem-mob-branch-cat {
+  font-family: var(--fb);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.sem-mob-branch-title {
+  font-family: var(--fd);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0.15rem 0 0;
+}
+
+.sem-mob-branch-count {
+  font-family: monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.sem-mob-leaves {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+}
+
+.sem-mob-leaf {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.sem-mob-leaf-ico {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sem-mob-leaf-ico :global(svg) {
+  width: 15px;
+  height: 15px;
+}
+
+.sem-mob-leaf-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sem-mob-leaf-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sem-mob-leaf-title {
+  font-family: var(--fd);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sem-mob-leaf-tag {
+  font-family: monospace;
+  font-size: 0.58rem;
+  font-weight: 600;
+  color: #15803D;
+  background: rgba(21, 128, 61, 0.08);
+  border: 1px solid rgba(21, 128, 61, 0.2);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+}
+
+.sem-mob-leaf-desc {
+  font-family: var(--fb);
+  font-size: 0.68rem;
+  color: var(--muted);
+  margin: 0.15rem 0;
+}
+
+.sem-mob-leaf-url {
+  font-family: monospace;
+  font-size: 0.62rem;
+  color: var(--dim);
+}
+
+.sem-mob-leaf-arr {
+  font-size: 0.85rem;
+  color: var(--dim);
+}
+
+@media (max-width: 1080px) {
+  .sem-board-wrapper { display: none; }
+  .sem-mobile-view { display: flex; }
+}
+</style>
+
+<!-- ════════════════ SCRIPT DE INTERACTIVIDAD AVANZADA ════════════════ -->
+<script>
+  function setupSemanticMap() {
+    const searchInput = document.getElementById('sem-search-input') as HTMLInputElement | null;
+    const clearSearchBtn = document.getElementById('sem-clear-search') as HTMLButtonElement | null;
+    const pills = document.querySelectorAll('.sem-pill');
+    const leafNodes = document.querySelectorAll('.sem-leaf') as NodeListOf<HTMLElement>;
+    const branchNodes = document.querySelectorAll('.sem-branch') as NodeListOf<HTMLElement>;
+    const counterDisplay = document.getElementById('sem-count-display');
+
+    let activeBranch = 'all';
+    let query = '';
+
+    function updateMapFilter() {
+      let visibleCount = 0;
+
+      leafNodes.forEach(node => {
+        const branchId = node.getAttribute('data-branch') || '';
+        const keywords = node.getAttribute('data-keywords') || '';
+        const id = node.getAttribute('id') || '';
+        const lineEl = document.getElementById(`line-${id}`);
+
+        const matchBranch = activeBranch === 'all' || branchId === activeBranch;
+        const matchSearch = !query || keywords.includes(query);
+
+        if (matchBranch && matchSearch) {
+          node.classList.remove('is-dimmed');
+          if (lineEl) lineEl.style.opacity = '0.85';
+          visibleCount++;
+        } else {
+          node.classList.add('is-dimmed');
+          if (lineEl) lineEl.style.opacity = '0.08';
+        }
+      });
+
+      // Actualizar ramas intermedias
+      branchNodes.forEach(b => {
+        const bId = b.getAttribute('data-branch-id') || '';
+        const mainLine = document.getElementById(`line-${bId}`);
+        const isActive = activeBranch === 'all' || activeBranch === bId;
+
+        if (isActive) {
+          b.classList.remove('is-dimmed');
+          if (mainLine) mainLine.style.opacity = '0.45';
+        } else {
+          b.classList.add('is-dimmed');
+          if (mainLine) mainLine.style.opacity = '0.08';
+        }
+      });
+
+      if (counterDisplay) {
+        counterDisplay.textContent = `${visibleCount} / ${leafNodes.length} Sistemas Conectados`;
+      }
+    }
+
+    // Búsqueda en vivo
+    searchInput?.addEventListener('input', (e) => {
+      query = (e.target as HTMLInputElement).value.trim().toLowerCase();
+      if (clearSearchBtn) {
+        clearSearchBtn.style.display = query ? 'block' : 'none';
+      }
+      updateMapFilter();
+    });
+
+    clearSearchBtn?.addEventListener('click', () => {
+      if (searchInput) {
+        searchInput.value = '';
+        query = '';
+        clearSearchBtn.style.display = 'none';
+        searchInput.focus();
+        updateMapFilter();
+      }
+    });
+
+    // Atajo '/'
+    window.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement !== searchInput) {
+        e.preventDefault();
+        searchInput?.focus();
+        searchInput?.select();
+      }
+    });
+
+    // Filtro por ramas
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('is-active'));
+        pill.classList.add('is-active');
+        activeBranch = pill.getAttribute('data-branch') || 'all';
+        updateMapFilter();
+      });
+    });
+
+    // Click directo en nodos de rama para filtrar
+    branchNodes.forEach(b => {
+      b.addEventListener('click', () => {
+        const bId = b.getAttribute('data-branch-id') || 'all';
+        activeBranch = activeBranch === bId ? 'all' : bId;
+
+        pills.forEach(p => {
+          const target = p.getAttribute('data-branch');
+          p.classList.toggle('is-active', target === activeBranch);
+        });
+
+        updateMapFilter();
+      });
+    });
+
+    // Hover sobre nodos hoja para iluminar líneas
+    leafNodes.forEach(leaf => {
+      const id = leaf.getAttribute('id');
+      const branchId = leaf.getAttribute('data-branch');
+      const subLine = id ? document.getElementById(`line-${id}`) : null;
+      const mainLine = branchId ? document.getElementById(`line-${branchId}`) : null;
+      const branchNode = branchId ? document.getElementById(branchId) : null;
+
+      leaf.addEventListener('mouseenter', () => {
+        if (subLine) subLine.classList.add('is-highlighted');
+        if (mainLine) {
+          mainLine.style.strokeOpacity = '1';
+          mainLine.style.strokeWidth = '2.5px';
+        }
+        if (branchNode) {
+          branchNode.style.transform = 'translate(-50%, -54%)';
+        }
+      });
+
+      leaf.addEventListener('mouseleave', () => {
+        if (subLine) subLine.classList.remove('is-highlighted');
+        if (mainLine) {
+          mainLine.style.strokeOpacity = '';
+          mainLine.style.strokeWidth = '';
+        }
+        if (branchNode) {
+          branchNode.style.transform = '';
+        }
+      });
+    });
+  }
+
+  setupSemanticMap();
+  document.addEventListener('astro:page-load', setupSemanticMap);
+</script>
