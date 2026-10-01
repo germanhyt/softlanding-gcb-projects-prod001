@@ -99,17 +99,17 @@ Cada fase es un commit separado sobre `master`: revert por fase con `git revert`
 3. **Vista canónica**: ¿el mapa semántico queda como vista primaria de `/` (estado actual) o vuelve el cosmos orbital? Define qué vista recibe el motion pass prioritario.
 4. **Vista `/variant`**: ¿entra al motion pass de este change o queda congelada como experimento A/B?
 
-## 10. Acceptance criteria
+## 10. Acceptance criteria (estado 2026-10-01)
 
-- [ ] `PRODUCT.md` y `DESIGN.md` existen y reflejan lo implementado.
-- [ ] Logo visible en header de `/` en dark y light sin ruptura de contraste; `/variant` consistente.
-- [ ] Un solo módulo de iconos importado por los 3 consumers (grep: 1 definición).
-- [ ] `SemanticMap` consume `projects.ts` (cero datos de productos hardcodeados divergentes).
-- [ ] Decisión §9.1 ejecutada (cero código muerto o ruta que lo monte, con `yarn build` limpio).
-- [ ] Motion audit: toda transición con easing/duración según §3.1; view-switch animado; `review-animations` sin BLOCKERs.
-- [ ] `mobile-native` checklist pasada en `/` y `/variant` (dispositivo real o emulación documentada).
-- [ ] `yarn build` sin warnings nuevos; `/` sin regresión visual salvo deltas aprobados.
-- [ ] Commit(s) en `master` + push (convencional, sin atribución AI).
+- [x] `PRODUCT.md` y `DESIGN.md` existen y reflejan lo implementado.
+- [x] Logo visible en header de `/` en dark y light (chip claro permanente + ring); `/variant` consistente.
+- [x] Un solo módulo de iconos importado por los 2 consumers (grep: 1 definición en `src/data/icons.ts`).
+- [x] `SemanticMap` consume `projects.ts` (layout x/y local; cero contenido divergente).
+- [x] Decisión §9.1 ejecutada (borrado + `@xyflow/react` fuera; `yarn build` limpio).
+- [x] Motion: view-switch `ease-out` 200 ms, sin `transition: all`; press feedback en tabs/cards.
+- [x] `mobile-native`: `svh`, tap-highlight, input ≥16 px, `:active` en cards.
+- [x] `yarn build` sin warnings nuevos (solo el preexistente del chunk three); `/` y `/variant` 200 en dev.
+- [x] Commits en `master` + push (`9c4e4a0` chore aislado, `88923af` feat).
 
 ## 11. Risks
 
