@@ -203,6 +203,9 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     <div class="sem-status-box">
       <span class="sem-dot-live"></span>
       <span id="sem-count-display">10 / 10 Sistemas Conectados</span>
+      <button id="sem-reset-layout" class="sem-reset-btn" title="Restablecer posiciones del mapa base" aria-label="Restablecer posiciones del mapa">
+        Restablecer
+      </button>
     </div>
   </div>
 
@@ -495,6 +498,26 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   background-color: #15803D;
 }
 
+.sem-reset-btn {
+  font-family: var(--fb);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  transition: color 0.15s ease-out, border-color 0.15s ease-out;
+}
+.sem-reset-btn:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+.sem-reset-btn:active {
+  transform: scale(0.96);
+}
+
 /* ── Lienzo SVG de Escritorio ──────────────────────── */
 .sem-board-wrapper {
   position: relative;
@@ -568,6 +591,14 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   transform: translate(-50%, -50%);
   z-index: 10;
   transition: opacity 0.2s ease, transform 0.2s ease;
+  cursor: grab;
+  touch-action: none;
+}
+
+.sem-node.is-dragging {
+  cursor: grabbing;
+  z-index: 30;
+  transition: none;
 }
 
 .sem-node.is-dimmed {
@@ -1158,7 +1189,6 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
   setupSemanticMap();
   document.addEventListener('astro:page-load', setupSemanticMap);
-
   /* ── Fit del tablero: escala 1440×940 al ancho real para que las
      líneas SVG y las tarjetas px siempre coincidan. Además se limita por
      alto (74svh) para que la sección cuadre en pantalla, centrando el
@@ -1181,4 +1211,230 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   fitBoard();
   window.addEventListener('load', fitBoard);
   document.addEventListener('astro:page-load', fitBoard);
+</script>
+
+<script>
+  /* ── Layout persistente: ramas y hojas arrastrables, hub fijo como ancla.
+     Las coordenadas base son las renderizadas por el servidor (mapa base);
+     cualquier cambio se guarda en localStorage y sobrevive recargas. ── */
+  (function initMapDrag() {
+    const board = document.getElementById('sem-board');
+    if (!board || board.dataset.dragReady === '1') return;
+    board.dataset.dragReady = '1';
+
+    const KEY = 'gcb-map-layout-v1';
+    const HUB_ID = 'node-center-holding';
+    const HUB_HALF = { hw: 175, hh: 95 };
+    const BRANCH_HALF = { hw: 120, hh: 70 };
+    const LEAF_HALF = { hw: 145, hh: 122 };
+
+    interface DragNode {
+      el: HTMLElement;
+      kind: 'hub' | 'branch' | 'leaf';
+      branchId?: string;
+      x: number;
+      y: number;
+    }
+
+    const px = (v: string) => parseFloat(v) || 0;
+    const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+    const f1 = (n: number) => +n.toFixed(1);
+
+    const nodes = new Map<string, DragNode>();
+    const hubEl = document.getElementById(HUB_ID) as HTMLElement | null;
+    if (hubEl) {
+      nodes.set(HUB_ID, { el: hubEl, kind: 'hub', x: px(hubEl.style.left), y: px(hubEl.style.top) });
+    }
+    board.querySelectorAll<HTMLElement>('.sem-branch').forEach((el) => {
+      nodes.set(el.id, { el, kind: 'branch', x: px(el.style.left), y: px(el.style.top) });
+    });
+    board.querySelectorAll<HTMLElement>('.sem-leaf').forEach((el) => {
+      nodes.set(el.id, {
+        el,
+        kind: 'leaf',
+        branchId: el.dataset.branch || '',
+        x: px(el.style.left),
+        y: px(el.style.top),
+      });
+    });
+
+    const defaults: Record<string, { x: number; y: number }> = {};
+    nodes.forEach((n, id) => {
+      defaults[id] = { x: n.x, y: n.y };
+    });
+
+    function edgePoint(
+      cx: number, cy: number, hw: number, hh: number,
+      dx: number, dy: number, gap = 10,
+    ) {
+      const len = Math.hypot(dx, dy) || 1;
+      const ux = dx / len;
+      const uy = dy / len;
+      const t = 1 / Math.sqrt((ux / hw) ** 2 + (uy / hh) ** 2) + gap;
+      return { x: cx + ux * t, y: cy + uy * t };
+    }
+
+    function setPath(id: string, d: string) {
+      const p = document.getElementById(`line-${id}`);
+      if (p) p.setAttribute('d', d);
+      const g = document.getElementById(`group-line-${id}`);
+      const pulse = g ? g.querySelector('.sem-line-pulse') : null;
+      if (pulse) pulse.setAttribute('d', d);
+    }
+
+    function layoutLeaf(m: DragNode) {
+      const b = m.branchId ? nodes.get(m.branchId) : undefined;
+      if (!b) return;
+      const dx = m.x - b.x;
+      const dy = m.y - b.y;
+      const s = edgePoint(b.x, b.y, BRANCH_HALF.hw, BRANCH_HALF.hh, dx, dy);
+      const e = edgePoint(m.x, m.y, LEAF_HALF.hw, LEAF_HALF.hh, -dx, -dy);
+      const mx = e.x - s.x;
+      setPath(
+        m.el.id,
+        `M ${f1(s.x)} ${f1(s.y)} C ${f1(s.x + mx * 0.55)} ${f1(s.y)}, ${f1(e.x - mx * 0.55)} ${f1(e.y)}, ${f1(e.x)} ${f1(e.y)}`,
+      );
+    }
+
+    function layoutNode(id: string) {
+      const n = nodes.get(id);
+      if (!n) return;
+      n.el.style.left = `${n.x}px`;
+      n.el.style.top = `${n.y}px`;
+      const hub = nodes.get(HUB_ID);
+      if (n.kind === 'branch' && hub) {
+        const p1 = edgePoint(hub.x, hub.y, HUB_HALF.hw, HUB_HALF.hh, n.x - hub.x, n.y - hub.y);
+        const p2 = edgePoint(n.x, n.y, BRANCH_HALF.hw, BRANCH_HALF.hh, hub.x - n.x, hub.y - n.y);
+        setPath(id, `M ${f1(p1.x)} ${f1(p1.y)} L ${f1(p2.x)} ${f1(p2.y)}`);
+        nodes.forEach((m) => {
+          if (m.kind === 'leaf' && m.branchId === id) layoutLeaf(m);
+        });
+      } else if (n.kind === 'leaf') {
+        layoutLeaf(n);
+      }
+    }
+
+    // Aplicar layout guardado (si existe) sobre el mapa base
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) || '{}') as Record<string, { x: number; y: number }>;
+      Object.entries(saved).forEach(([id, p]) => {
+        const n = nodes.get(id);
+        if (n && n.kind !== 'hub' && Number.isFinite(p?.x) && Number.isFinite(p?.y)) {
+          n.x = clamp(p.x, 60, 1380);
+          n.y = clamp(p.y, 40, 900);
+        }
+      });
+    } catch {
+      /* sin layout guardado: se usa el mapa base */
+    }
+    nodes.forEach((n, id) => {
+      if (n.kind === 'branch') layoutNode(id);
+    });
+
+    function boardScale() {
+      const m = board!.style.transform.match(/scale\(([\d.]+)\)/);
+      return m ? parseFloat(m[1]!) || 1 : 1;
+    }
+
+    interface DragState {
+      id: string;
+      el: HTMLElement;
+      startX: number;
+      startY: number;
+      origX: number;
+      origY: number;
+      moved: boolean;
+    }
+    let drag: DragState | null = null;
+
+    board.addEventListener('pointerdown', (e: PointerEvent) => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      const target = e.target as Element | null;
+      const nodeEl = target?.closest?.('.sem-node') as HTMLElement | null;
+      if (!nodeEl || !nodes.has(nodeEl.id) || nodeEl.id === HUB_ID) return;
+      const n = nodes.get(nodeEl.id)!;
+      drag = {
+        id: nodeEl.id,
+        el: nodeEl,
+        startX: e.clientX,
+        startY: e.clientY,
+        origX: n.x,
+        origY: n.y,
+        moved: false,
+      };
+    });
+
+    window.addEventListener('pointermove', (e: PointerEvent) => {
+      if (!drag) return;
+      const dx = e.clientX - drag.startX;
+      const dy = e.clientY - drag.startY;
+      if (!drag.moved && Math.hypot(dx, dy) < 6) return;
+      const n = nodes.get(drag.id);
+      if (!n) {
+        drag = null;
+        return;
+      }
+      if (!drag.moved) {
+        drag.moved = true;
+        drag.el.classList.add('is-dragging');
+      }
+      const s = boardScale();
+      n.x = clamp(drag.origX + dx / s, 60, 1380);
+      n.y = clamp(drag.origY + dy / s, 40, 900);
+      layoutNode(drag.id);
+    });
+
+    function endDrag() {
+      if (!drag) return;
+      const wasMoved = drag.moved;
+      drag.el.classList.remove('is-dragging');
+      drag = null;
+      if (!wasMoved) return;
+      // Persistir coordenadas
+      try {
+        const persist: Record<string, { x: number; y: number }> = {};
+        nodes.forEach((n, id) => {
+          if (n.kind !== 'hub') persist[id] = { x: Math.round(n.x), y: Math.round(n.y) };
+        });
+        localStorage.setItem(KEY, JSON.stringify(persist));
+      } catch {
+        /* almacenamiento no disponible: el drag sigue funcionando en sesión */
+      }
+      // El gesto fue arrastre, no clic: anular la navegación del enlace
+      board!.addEventListener(
+        'click',
+        (ev: MouseEvent) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+        },
+        { capture: true, once: true },
+      );
+    }
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', () => {
+      if (drag) {
+        drag.el.classList.remove('is-dragging');
+        drag = null;
+      }
+    });
+
+    // Restablecer al mapa base
+    document.getElementById('sem-reset-layout')?.addEventListener('click', () => {
+      try {
+        localStorage.removeItem(KEY);
+      } catch {
+        /* noop */
+      }
+      nodes.forEach((n, id) => {
+        const d = defaults[id];
+        if (d && n.kind !== 'hub') {
+          n.x = d.x;
+          n.y = d.y;
+        }
+      });
+      nodes.forEach((n, id) => {
+        if (n.kind === 'branch') layoutNode(id);
+      });
+    });
+  })();
 </script>

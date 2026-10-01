@@ -1,13 +1,20 @@
 ---
 import VariantLayout from '../layouts/VariantLayout.astro';
 import SemanticMap from '../components/SemanticMap.astro';
-import Footer from '../components/variant/Footer.astro';
 ---
 
 <VariantLayout
   title="Presentación · Grupo Cordillera Blanca SA"
   description="Presentación corporativa de Grupo Cordillera Blanca SA: identidad y mapa semántico de sistemas."
 >
+  <!-- Chip mínimo para volver (el footer se quitó para que la sección 2 cuadre en pantalla) -->
+  <a href="/" class="pres-back-chip" aria-label="Volver al portal">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <line x1="19" y1="12" x2="5" y2="12" />
+      <polyline points="12 19 5 12 12 5" />
+    </svg>
+    <span>Portal</span>
+  </a>
   <!-- ═══ PÁGINA 1: PORTADA (sticky: la página 2 la cubre al scrollear) ═══ -->
   <section id="pres-hero" class="pres-hero relative flex items-center justify-center overflow-hidden">
     <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
@@ -60,11 +67,32 @@ import Footer from '../components/variant/Footer.astro';
       <SemanticMap />
     </div>
   </section>
-
-  <Footer />
 </VariantLayout>
 
 <style>
+  .pres-back-chip {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 50;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-variant-text-muted);
+    background-color: color-mix(in srgb, var(--color-variant-bg) 70%, transparent);
+    border: 1px solid var(--color-variant-border);
+    backdrop-filter: blur(12px);
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .pres-back-chip:hover {
+    color: var(--color-variant-gold);
+    border-color: var(--color-variant-border-strong);
+  }
   /* Sticky scroll: la portada queda fija y el mapa la cubre como otra página */
   .pres-hero {
     position: sticky;
@@ -78,11 +106,7 @@ import Footer from '../components/variant/Footer.astro';
     background-color: var(--color-variant-bg);
     border-top: 1px solid var(--color-variant-border);
     box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.55);
-  }
-  :global(.variant-footer) {
-    position: relative;
-    z-index: 10;
-    background-color: var(--color-variant-bg);
+    padding-bottom: 3rem;
   }
   .pres-scroll-cue {
     position: absolute;
