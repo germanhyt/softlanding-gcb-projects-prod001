@@ -459,8 +459,9 @@ const branches: MapBranch[] = [
 
 .sem-board {
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 1440px;
+  height: 940px;
+  transform-origin: top left;
 }
 
 .sem-svg {
@@ -1107,4 +1108,24 @@ const branches: MapBranch[] = [
 
   setupSemanticMap();
   document.addEventListener('astro:page-load', setupSemanticMap);
+
+  /* ── Fit del tablero: escala 1440×940 al ancho real para que las
+     líneas SVG y las tarjetas px siempre coincidan ── */
+  function fitBoard() {
+    const wrapper = document.getElementById('sem-board-wrapper');
+    const board = document.getElementById('sem-board');
+    if (!wrapper || !board) return;
+    const w = wrapper.clientWidth;
+    if (!w) return;
+    const s = Math.min(w / 1440, 1);
+    board.style.transform = `scale(${s})`;
+    wrapper.style.height = `${Math.round(940 * s)}px`;
+  }
+  const boardWrapper = document.getElementById('sem-board-wrapper');
+  if (boardWrapper && typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(fitBoard).observe(boardWrapper);
+  }
+  fitBoard();
+  window.addEventListener('load', fitBoard);
+  document.addEventListener('astro:page-load', fitBoard);
 </script>
