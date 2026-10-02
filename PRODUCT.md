@@ -21,6 +21,6 @@ Encontrar un sistema y abrirlo en ≤ 2 clics, en desktop y en móvil.
 - Data de productos: single source of truth en `src/data/projects.ts`.
 - Layout del mapa: `src/data/map-layout.ts` es el mapa base. El drag persiste por navegador en `localStorage` (`gcb-map-layout-v1`); el botón "Copiar layout" exporta el JSON listo para pegar y commitear como nuevo base.
 - Tono institucional AR (`lang="es"`, "SA", sin emoji).
-- Rutas: `/` (portal estable) y `/variant` (showcase A/B con Three.js). `/` nunca se rompe por cambios en `/variant`.
-- Ruta `/presentacion`: portada (logo + nombre + scroll cue animado) y sección de mapa semántico radial con transiciones GSAP (ScrollTrigger, code-split solo en esta ruta).
+- Rutas: `/` (presentación: portada + mapa semántico), `/portal` (portal clásico: mapa + cosmos), `/variant` (showcase A/B con Three.js). `/portal` y `/variant` nunca rompen `/`.
+- Portada `/`: logo + nombre + scroll cue animado; la sección del mapa la cubre con transición GSAP (ScrollTrigger, code-split solo en esta ruta).
 - Tema dark/light persiste en `localStorage` key `gcb-theme` (`dark` por defecto).

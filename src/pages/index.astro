@@ -1,8 +1,220 @@
 ---
-import Dashboard from "../components/Dashboard.astro";
-import Layout from "../layouts/Layout.astro";
+import VariantLayout from '../layouts/VariantLayout.astro';
+import SemanticMap from '../components/SemanticMap.astro';
+
+const year = new Date().getFullYear();
 ---
 
-<Layout>
-  <Dashboard />
-</Layout>
+<VariantLayout
+  title="Grupo Cordillera Blanca SA"
+  description="Portal de acceso a los sistemas y aplicaciones de Grupo Cordillera Blanca SA."
+>
+  <!-- ═══ PÁGINA 1: PORTADA (sticky: la página 2 la cubre al scrollear) ═══ -->
+  <section id="pres-hero" class="pres-hero relative flex items-center justify-center overflow-hidden">
+    <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
+      <img
+        src="/logo-gcb.jpg"
+        alt="GCB — Grupo Cordillera Blanca SA"
+        width="112"
+        height="112"
+        class="rounded-3xl block"
+        style="box-shadow: 0 0 0 1px var(--color-variant-border), 0 24px 64px rgba(0,0,0,0.5);"
+        fetchpriority="high"
+      />
+
+      <h1 class="variant-heading font-bold leading-none">
+        <span class="block text-5xl sm:text-7xl" style="color: var(--color-variant-gold);">Grupo Cordillera Blanca</span>
+        <span class="mt-3 block text-xl sm:text-2xl font-medium" style="color: var(--color-variant-text-muted);">
+          Sociedad Anónima · Portal Central de Sistemas
+        </span>
+      </h1>
+
+      <p class="max-w-2xl text-sm sm:text-lg" style="color: var(--color-variant-text-muted);">
+        De la identidad al ecosistema: deslizá para recorrer el mapa semántico
+        que entrelaza nuestros cuatro pilares y diez plataformas.
+      </p>
+
+      <span
+        class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest"
+        style="color: var(--color-variant-gold); border: 1px solid var(--color-variant-border); background-color: rgba(201,168,76,0.08);"
+      >
+        Presentación corporativa · 10 sistemas
+      </span>
+    </div>
+
+    <!-- Scroll cue animado -->
+    <a
+      href="#pres-map"
+      class="pres-scroll-cue"
+      aria-label="Deslizar hacia el mapa de sistemas"
+    >
+      <span class="text-[10px] uppercase tracking-widest" style="color: var(--color-variant-text-muted);">Scroll</span>
+      <svg class="pres-scroll-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-variant-gold);">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </a>
+  </section>
+
+  <!-- ═══ PÁGINA 2: MAPA SEMÁNTICO (cubre la portada al scrollear) ═══ -->
+  <section id="pres-map" class="pres-map relative py-10 sm:py-14">
+    <div id="pres-map-inner" class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <SemanticMap />
+    </div>
+  </section>
+
+  <footer class="pres-footer">
+    <p>© {year} Grupo Cordillera Blanca SA</p>
+    <nav aria-label="Vistas del portal">
+      <a href="/portal">Portal clásico</a>
+      <span aria-hidden="true">·</span>
+      <a href="/variant">Variante 3D</a>
+    </nav>
+  </footer>
+</VariantLayout>
+
+<style>
+  /* Snap suave: si el scroll queda a medias, la sección más cercana se asienta sola */
+  html {
+    scroll-snap-type: y proximity;
+  }
+  /* Sticky scroll: la portada queda fija y el mapa la cubre como otra página */
+  .pres-hero {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    z-index: 1;
+    scroll-snap-align: start;
+  }
+  .pres-map {
+    position: relative;
+    z-index: 10;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    scroll-snap-align: start;
+    background-color: var(--color-variant-bg);
+    border-top: 1px solid var(--color-variant-border);
+    box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.55);
+    padding-bottom: 3rem;
+  }
+  .pres-scroll-cue {
+    position: absolute;
+    bottom: 1.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    z-index: 10;
+  }
+  .pres-scroll-chevron {
+    animation: pres-cue-bounce 1.8s ease-in-out infinite;
+  }
+  @keyframes pres-cue-bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.55; }
+    50%      { transform: translateY(8px); opacity: 1; }
+  }
+  .pres-footer {
+    position: relative;
+    z-index: 10;
+    background-color: var(--color-variant-bg);
+    border-top: 1px solid var(--color-variant-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 1.25rem 1rem;
+    font-size: 0.72rem;
+    color: var(--color-variant-text-muted);
+  }
+  .pres-footer nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .pres-footer a {
+    color: var(--color-variant-gold);
+    text-decoration: none;
+  }
+  .pres-footer a:hover {
+    text-decoration: underline;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pres-scroll-chevron { animation: none; }
+    html { scroll-behavior: auto; scroll-snap-type: none; }
+  }
+</style>
+
+<script>
+  import gsap from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduced) {
+    // Portada: salida sedosa mientras el mapa la cubre (sube, se achica y disuelve)
+    gsap.to('#pres-hero-content', {
+      yPercent: -14,
+      scale: 0.96,
+      opacity: 0.1,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '#pres-hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.6,
+      },
+    });
+
+    // Página 2: transición tipo pase de página (entra desde abajo con presencia:
+    // opacity + desplazamiento + escala sutil, bien visible en scroll manual)
+    gsap.from('#pres-map-inner', {
+      y: 90,
+      opacity: 0,
+      scale: 0.97,
+      duration: 1.2,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: '#pres-map',
+        start: 'top 92%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
+    // Líneas del mapa: dibujado progresivo al entrar a la sección
+    const lines = Array.from(
+      document.querySelectorAll<SVGPathElement>('#pres-map .sem-line-main, #pres-map .sem-line-sub')
+    );
+    lines.forEach((line) => {
+      try {
+        const len = line.getTotalLength();
+        line.style.strokeDasharray = `${len}`;
+        line.style.strokeDashoffset = `${len}`;
+      } catch {
+        /* paths no medibles: quedan visibles sin animación */
+      }
+    });
+    const drawable = lines.filter((l) => l.style.strokeDashoffset !== '');
+    if (drawable.length > 0) {
+      gsap.to(drawable, {
+        strokeDashoffset: 0,
+        duration: 1.4,
+        ease: 'power2.out',
+        stagger: 0.05,
+        scrollTrigger: {
+          trigger: '#pres-map',
+          start: 'top 70%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+    }
+
+    // Recalcular posiciones tras la carga (logo/fuentes mueven el layout)
+    window.addEventListener('load', () => ScrollTrigger.refresh());
+  }
+</script>
