@@ -114,4 +114,21 @@ docker compose up -d
 docker restart nginx_proxy
 ```
 
+==================
+
+Despliegue v2 — gcb.pe (2026-10-02, vigente)
+
+- Dominio: **gcb.pe** + **www.gcb.pe** (DNS apunta a 62.169.23.24, verificado).
+- Ruta en el servidor: `/home/projects/portalwebv2/dist` (no pisa el portal v1).
+- Volumen nginx: `/home/projects/portalwebv2/dist:/usr/share/nginx/portalwebv2:ro`.
+- SSL: LetsEncrypt `gcb.pe` (certbot webroot, expira 2026-12-31, renueva el loop existente).
+- Rutas servidas: `/`, `/presentacion/`, `/variant/` (try_files + index).
+- OJO al subir por scp: deja directorios en 700 → correr
+  `find dist -type d -exec chmod 755 {} +` y `... -type f -exec chmod 644 {} +`.
+- Backups en servidor: `nginx.conf.bak-portalv2-20261002`, `docker-compose.yml.bak-portalv2-20261002`.
+- Incidente 2026-10-02: al recrear `nginx_proxy` no levantó por upstreams
+  caídos (`evolution-api`, `sandbox_*`). Fix: `proxy_pass` con variable
+  (resolución diferida) en esos 4 bloques. Sin eso, cualquier recreate
+  futuro del proxy vuelve a tumbar todos los sitios.
+
 
