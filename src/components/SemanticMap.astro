@@ -193,8 +193,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       <button id="sem-reset-layout" class="sem-reset-btn" title="Restablecer posiciones del mapa base" aria-label="Restablecer posiciones del mapa">
         Restablecer
       </button>
-      <button id="sem-copy-layout" class="sem-reset-btn" title="Copiar el layout actual como JSON para pegarlo en src/data/map-layout.ts" aria-label="Copiar layout actual como JSON">
-        Copiar layout
+      <button id="sem-save-layout" class="sem-reset-btn" title="Guardar el layout actual en src/data/map-layout.ts (dev) o copiarlo si no hay servidor" aria-label="Guardar layout actual en el JSON del proyecto">
+        Guardar layout
       </button>
     </div>
   </div>
@@ -1427,9 +1427,30 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       });
     });
 
-    // Copiar el layout actual como JSON listo para src/data/map-layout.ts
-    const copyBtn = document.getElementById('sem-copy-layout') as HTMLButtonElement | null;
-    copyBtn?.addEventListener('click', async () => {
+    // Guardar el layout actual en src/data/map-layout.ts (vía API en dev)
+    // con fallback a clipboard cuando no hay servidor que escriba.
+    const saveBtn = document.getElementById('sem-save-layout') as HTMLButtonElement | null;
+    async function copyToClipboard(text: string): Promise<boolean> {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          const ok = document.execCommand('copy');
+          ta.remove();
+          return ok;
+        } catch {
+          return false;
+        }
+      }
+    }
+    saveBtn?.addEventListener('click', async () => {
       const branchPos: Record<string, { x: number; y: number }> = {};
       const leafPos: Record<string, { x: number; y: number }> = {};
       nodes.forEach((n, id) => {
@@ -1437,34 +1458,37 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
         if (n.kind === 'branch') branchPos[id] = p;
         else if (n.kind === 'leaf') leafPos[id] = p;
       });
+      const say = (msg: string) => {
+        if (!saveBtn) return;
+        saveBtn.textContent = msg;
+        window.setTimeout(() => {
+          saveBtn.textContent = 'Guardar layout';
+        }, 2600);
+      };
+      const layoutPayload = { branches: branchPos, leaves: leafPos };
+      const toB64url = (obj: unknown) =>
+        btoa(unescape(encodeURIComponent(JSON.stringify(obj))))
+          .replace(/\+/g, '-')
+          .replace(/\//g, '_')
+          .replace(/=+$/, '');
+      // 1) Intento directo: el dev server lo escribe en el JSON del proyecto
+      //    (GET con payload en la URL; en preview/producción no hay servidor
+      //    y se cae al clipboard).
+      try {
+        const res = await fetch(`/api/save-layout?d=${toB64url(layoutPayload)}`);
+        if (res.ok) {
+          say('¡Guardado en map-layout.ts!');
+          return;
+        }
+      } catch {
+        /* sin servidor: caemos al clipboard */
+      }
+      // 2) Fallback: copiar para pegado manual en src/data/map-layout.ts
       const payload =
         `export const branchPositions: Record<string, NodePosition> = ${JSON.stringify(branchPos, null, 2)};\n\n` +
         `export const leafPositions: Record<string, NodePosition> = ${JSON.stringify(leafPos, null, 2)};`;
-      let ok = false;
-      try {
-        await navigator.clipboard.writeText(payload);
-        ok = true;
-      } catch {
-        try {
-          const ta = document.createElement('textarea');
-          ta.value = payload;
-          ta.style.position = 'fixed';
-          ta.style.opacity = '0';
-          document.body.appendChild(ta);
-          ta.select();
-          ok = document.execCommand('copy');
-          ta.remove();
-        } catch {
-          ok = false;
-        }
-      }
-      if (copyBtn) {
-        const original = 'Copiar layout';
-        copyBtn.textContent = ok ? '¡Copiado! Pegalo en map-layout.ts' : 'No se pudo copiar';
-        window.setTimeout(() => {
-          copyBtn.textContent = original;
-        }, 2500);
-      }
+      const ok = await copyToClipboard(payload);
+      say(ok ? '¡Copiado! Pegalo en map-layout.ts' : 'No se pudo guardar');
     });
   })();
 </script>

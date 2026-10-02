@@ -1,7 +1,8 @@
 /* ── Mapa de coordenadas del mapa semántico ──
    Single source of truth del layout (single source of truth, ver DESIGN.md).
-   Flujo: acomodá los nodos a gusto en el tablero, botón "Copiar layout",
-   pegá el JSON aquí y commiteá. Ese pasa a ser el mapa base para todos. */
+   Flujo: acomodá los nodos a gusto en el tablero y botón "Guardar layout"
+   (persiste aquí vía /api/save-layout en dev; en producción cae a clipboard).
+   Ese pasa a ser el mapa base para todos. */
 
 export interface NodePosition {
   x: number;
