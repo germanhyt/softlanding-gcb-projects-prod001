@@ -188,8 +188,11 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 ---
 
 <div class="sem-container" id="semantic-map-root">
-  <!-- ════════════════ BARRA DE CONTROL CORPORATIVA ════════════════ -->
-  <div class="sem-toolbar">
+  <!-- ════════════════ LAYOUT: SIDEBAR + LIENZO FULL-WIDTH ════════════════ -->
+  <div class="sem-layout">
+  <!-- ── Sidebar de filtros (izquierda en desktop, arriba en móvil) ── -->
+  <aside class="sem-sidebar" aria-label="Filtros del mapa">
+    <p class="sem-side-title">Filtrar</p>
     <!-- Buscador Integrado en el Mapa -->
     <div class="sem-search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -208,6 +211,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     </div>
 
     <!-- Filtros de Ramas / Pilares -->
+    <p class="sem-side-title">Pilares</p>
     <div class="sem-pills">
       <button class="sem-pill is-active" data-branch="all">Todas las ramas</button>
       <button class="sem-pill" data-branch="b-refugio">Refugio Data</button>
@@ -223,6 +227,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     <div class="sem-status-box">
       <span class="sem-dot-live"></span>
       <span id="sem-count-display">{planetDefs.length} / {planetDefs.length} Sistemas Conectados</span>
+    </div>
+    <div class="sem-side-actions">
       <button id="sem-reset-layout" class="sem-reset-btn" title="Restablecer posiciones del mapa base" aria-label="Restablecer posiciones del mapa">
         Restablecer
       </button>
@@ -230,7 +236,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
         Guardar layout
       </button>
     </div>
-  </div>
+  </aside>
 
   <!-- ════════════════ LIENZO INTERACTIVO (DESKTOP) ════════════════ -->
   <div class="sem-board-wrapper" id="sem-board-wrapper">
@@ -347,6 +353,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       )))}
     </div>
   </div>
+  </div><!-- /sem-layout -->
 
   <!-- ════════════════ VISTA MÓVIL (ÁRBOL SEMÁNTICO EN CASCADA) ════════════════ -->
   <div class="sem-mobile-view">
@@ -396,25 +403,57 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 /* ── Estructura Base ───────────────────────────────── */
 .sem-container {
   width: 100%;
-  max-width: 1480px;
   margin: 0 auto;
-  padding: 1.25rem 1rem 3.5rem;
+  padding: 1.25rem clamp(1rem, 3vw, 2.5rem) 3.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
-/* ── Barra de Control Superior ─────────────────────── */
-.sem-toolbar {
+/* ── Layout: sidebar izquierda + lienzo full-width ─── */
+.sem-layout {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  gap: 1.25rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.sem-sidebar {
+  width: 272px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
   gap: 0.85rem;
   background-color: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.sem-side-title {
+  font-family: var(--fb);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+
+.sem-side-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.sem-side-actions .sem-reset-btn {
+  flex: 1;
+}
+
+.sem-board-wrapper {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .sem-search {
@@ -422,7 +461,6 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 320px;
 }
 
 .sem-search svg {
@@ -475,7 +513,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
 .sem-pills {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
   gap: 0.35rem;
 }
 
@@ -487,14 +526,19 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 0.35rem 0.75rem;
+  padding: 0.45rem 0.75rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  text-align: left;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out, border-color 0.15s ease-out, transform 0.15s ease-out;
 }
 
 .sem-pill:hover {
   color: var(--text);
   border-color: var(--gold-border);
+}
+
+.sem-pill:active {
+  transform: scale(0.98);
 }
 
 .sem-pill.is-active {
@@ -505,13 +549,15 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 }
 
 .sem-status-box {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 0.45rem;
   font-family: var(--fb);
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--muted);
+  border-top: 1px solid var(--border);
+  padding-top: 0.85rem;
 }
 
 .sem-dot-live {
@@ -1069,6 +1115,20 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 }
 
 @media (max-width: 1080px) {
+  .sem-layout {
+    flex-direction: column;
+  }
+  .sem-sidebar {
+    width: 100%;
+    position: static;
+  }
+  .sem-pills {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  .sem-pill {
+    text-align: center;
+  }
   .sem-board-wrapper { display: none; }
   .sem-mobile-view { display: flex; }
 }

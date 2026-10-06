@@ -37,6 +37,7 @@ La variante `/variant` reusa estos accents con superficies propias (`src/styles/
 ## Layout
 
 - Header sticky: brand (logo + nombre + sub) + switch de vista (mapa/órbita) + estado + theme toggle.
+- Mapa semántico: sidebar izquierda (buscador, filtros por pilar, estado, acciones) + lienzo a todo el ancho; en ≤1080px la sidebar pasa arriba y rige el árbol móvil.
 - Vista primaria `/`: mapa semántico (árbol corporativo); vista secundaria: cosmos orbital.
 - Footer: © + link recíproco discreto a `/variant`.
 - Grid `/variant`: 1-col mobile → 2 tablet → 3 desktop → 4 wide (Tailwind).
