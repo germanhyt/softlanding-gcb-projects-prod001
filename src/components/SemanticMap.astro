@@ -36,9 +36,9 @@ const CY = MAP_CENTER.y;
 
 /* Semitamaños (ancho/alto / 2 + margen) para recortar los conectores al ras
    de cada nodo: la línea llega al borde, nunca traspasa la tarjeta. */
-const HUB_HALF = { hw: 175, hh: 95 };
-const BRANCH_HALF = { hw: 120, hh: 70 };
-const LEAF_HALF = { hw: 127, hh: 97 };
+const HUB_HALF = { hw: 165, hh: 80 };
+const BRANCH_HALF = { hw: 105, hh: 55 };
+const LEAF_HALF = { hw: 118, hh: 80 };
 
 /** Punto sobre el borde de una elipse (cx,cy,hw,hh) en la dirección (dx,dy). */
 function edgePoint(
@@ -59,10 +59,11 @@ const leafLayout = leafPositions;
 
 const branchLeafIds: Record<string, string[]> = {
   'b-refugio': ['p-proc', 'p-del', 'p-com', 'p-docgcb'],
-  'b-channels': ['p-kiosk', 'p-runner'],
-  'b-entretenimiento': ['p-bosque', 'p-bosque-adm', 'p-agenda'],
+  'b-channels': ['p-kiosk', 'p-runner', 'p-agenda'],
+  'b-bosque': ['p-bosque', 'p-bosque-adm'],
   'b-ai': ['p-ai'],
-  'b-reservas': ['p-est', 'p-sisa', 'p-sisa-reg'],
+  'b-sisa': ['p-sisa', 'p-sisa-reg'],
+  'b-parking': ['p-est'],
   'b-finanzas': ['p-conc'],
 };
 
@@ -104,13 +105,13 @@ const branches: MapBranch[] = [
     leaves: branchLeafIds['b-channels']!.map(leafFromProject),
   },
   {
-    id: 'b-entretenimiento',
-    title: 'Entretenimiento',
-    desc: 'Fiestas, Eventos & Cartelera',
-    category: 'Eventos',
-    ...branchPositions['b-entretenimiento'],
+    id: 'b-bosque',
+    title: 'Bosque Mágico',
+    desc: 'Fiestas & Administración',
+    category: 'Negocio',
+    ...branchPositions['b-bosque'],
     accent: '#FF8C42',
-    leaves: branchLeafIds['b-entretenimiento']!.map(leafFromProject),
+    leaves: branchLeafIds['b-bosque']!.map(leafFromProject),
   },
   {
     id: 'b-ai',
@@ -122,13 +123,22 @@ const branches: MapBranch[] = [
     leaves: branchLeafIds['b-ai']!.map(leafFromProject),
   },
   {
-    id: 'b-reservas',
-    title: 'Reservas & Acceso',
-    desc: 'Reservas, accesos y aforo',
-    category: 'Acceso',
-    ...branchPositions['b-reservas'],
-    accent: '#9B6DFF',
-    leaves: branchLeafIds['b-reservas']!.map(leafFromProject),
+    id: 'b-sisa',
+    title: 'SISA Reservas',
+    desc: 'Reservas & Registro',
+    category: 'Reservas',
+    ...branchPositions['b-sisa'],
+    accent: '#FF6B8E',
+    leaves: branchLeafIds['b-sisa']!.map(leafFromProject),
+  },
+  {
+    id: 'b-parking',
+    title: 'Parking',
+    desc: 'Control de acceso & Aforo',
+    category: 'Operaciones',
+    ...branchPositions['b-parking'],
+    accent: '#4A7A5A',
+    leaves: branchLeafIds['b-parking']!.map(leafFromProject),
   },
   {
     id: 'b-finanzas',
@@ -202,11 +212,11 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       <button class="sem-pill is-active" data-branch="all">Todas las ramas</button>
       <button class="sem-pill" data-branch="b-refugio">Refugio Data</button>
       <button class="sem-pill" data-branch="b-channels">Canales de Venta</button>
-      <button class="sem-pill" data-branch="b-entretenimiento">Entretenimiento</button>
+      <button class="sem-pill" data-branch="b-bosque">Bosque Mágico</button>
       <button class="sem-pill" data-branch="b-ai">Inteligencia AI</button>
-      <button class="sem-pill" data-branch="b-reservas">Reservas & Acceso</button>
+      <button class="sem-pill" data-branch="b-sisa">SISA Reservas</button>
+      <button class="sem-pill" data-branch="b-parking">Parking</button>
       <button class="sem-pill" data-branch="b-finanzas">Finanzas</button>
-      <button class="sem-pill" data-branch="b-infra">Infraestructura</button>
     </div>
 
     <!-- Contador de Sistemas -->
@@ -562,20 +572,20 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 /* Líneas de Conexión */
 .sem-line-main {
   stroke: var(--gold);
-  stroke-width: 2.5;
-  stroke-opacity: 0.8;
+  stroke-width: 3;
+  stroke-opacity: 0.9;
   stroke-linecap: round;
   fill: none;
 }
 
 .sem-line-pulse {
   stroke: var(--gold);
-  stroke-width: 2.5;
+  stroke-width: 3;
   stroke-dasharray: 8 28;
   stroke-linecap: round;
   fill: none;
   animation: pulseMove 3s linear infinite;
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 @keyframes pulseMove {
@@ -585,8 +595,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
 .sem-line-sub {
   /* El color lo pone cada path vía atributo stroke (= accent del pilar) */
-  stroke-width: 2;
-  stroke-opacity: 0.55;
+  stroke-width: 2.5;
+  stroke-opacity: 0.8;
   stroke-linecap: round;
   fill: none;
   transition: stroke-width 0.2s ease, stroke-opacity 0.2s ease;
@@ -1241,9 +1251,9 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
     const KEY = 'gcb-map-layout-v1';
     const HUB_ID = 'node-center-holding';
-    const HUB_HALF = { hw: 175, hh: 95 };
-    const BRANCH_HALF = { hw: 120, hh: 70 };
-    const LEAF_HALF = { hw: 127, hh: 97 };
+    const HUB_HALF = { hw: 165, hh: 80 };
+    const BRANCH_HALF = { hw: 105, hh: 55 };
+    const LEAF_HALF = { hw: 118, hh: 80 };
 
     interface DragNode {
       el: HTMLElement;

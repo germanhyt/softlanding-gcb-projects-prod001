@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
    Se implementa como middleware Node crudo porque en este entorno el dev
    server entrega los Request de Astro sin body/headers/query.
    En build/preview no existe servidor: el cliente cae a clipboard. */
-const KNOWN_BRANCHES = ['b-refugio', 'b-channels', 'b-entretenimiento', 'b-ai', 'b-reservas', 'b-finanzas'];
+const KNOWN_BRANCHES = ['b-refugio', 'b-channels', 'b-bosque', 'b-ai', 'b-sisa', 'b-parking', 'b-finanzas'];
 const KNOWN_LEAVES = [
   'p-proc', 'p-del', 'p-com', 'p-docgcb',
   'p-kiosk', 'p-runner', 'p-agenda',

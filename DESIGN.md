@@ -10,6 +10,10 @@
 
 ## Paleta
 
+Tokens compartidos en `src/styles/tokens.css` (importado por ambos layouts;
+claro por defecto, oscuro vía `html.dark` o `html[data-theme='dark']`).
+No duplicar tokens en componentes.
+
 | Token | Valor | Uso |
 |---|---|---|
 | `--gold` | `#C9A84C` | Accent primario, órbita inner / Refugio Data |
