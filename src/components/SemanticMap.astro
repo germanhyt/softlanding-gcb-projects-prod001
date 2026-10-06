@@ -38,7 +38,7 @@ const CY = MAP_CENTER.y;
    de cada nodo: la línea llega al borde, nunca traspasa la tarjeta. */
 const HUB_HALF = { hw: 175, hh: 95 };
 const BRANCH_HALF = { hw: 120, hh: 70 };
-const LEAF_HALF = { hw: 145, hh: 122 };
+const LEAF_HALF = { hw: 127, hh: 97 };
 
 /** Punto sobre el borde de una elipse (cx,cy,hw,hh) en la dirección (dx,dy). */
 function edgePoint(
@@ -58,10 +58,12 @@ function edgePoint(
 const leafLayout = leafPositions;
 
 const branchLeafIds: Record<string, string[]> = {
-  'b-refugio':  ['p-proc', 'p-del', 'p-com', 'p-docgcb'],
+  'b-refugio': ['p-proc', 'p-del', 'p-com', 'p-docgcb'],
   'b-channels': ['p-kiosk', 'p-runner', 'p-agenda'],
-  'b-ai':       ['p-ai'],
-  'b-infra':    ['p-est', 'p-conc'],
+  'b-bosque': ['p-bosque', 'p-bosque-adm'],
+  'b-sisa': ['p-sisa', 'p-sisa-reg'],
+  'b-ai': ['p-ai'],
+  'b-infra': ['p-est', 'p-conc'],
 };
 
 function leafFromProject(id: string): MapLeaf {
@@ -102,6 +104,15 @@ const branches: MapBranch[] = [
     leaves: branchLeafIds['b-channels']!.map(leafFromProject),
   },
   {
+    id: 'b-bosque',
+    title: 'Bosque Mágico',
+    desc: 'Fiestas & Eventos',
+    category: 'Entretenimiento',
+    ...branchPositions['b-bosque'],
+    accent: '#FF8C42',
+    leaves: branchLeafIds['b-bosque']!.map(leafFromProject),
+  },
+  {
     id: 'b-ai',
     title: 'Inteligencia de Datos',
     desc: 'Modelos de Lenguaje & Análisis',
@@ -109,6 +120,15 @@ const branches: MapBranch[] = [
     ...branchPositions['b-ai'],
     accent: '#4A9EFF',
     leaves: branchLeafIds['b-ai']!.map(leafFromProject),
+  },
+  {
+    id: 'b-sisa',
+    title: 'SISA Reservas',
+    desc: 'Reservas & Registro',
+    category: 'Reservas',
+    ...branchPositions['b-sisa'],
+    accent: '#FF6B8E',
+    leaves: branchLeafIds['b-sisa']!.map(leafFromProject),
   },
   {
     id: 'b-infra',
@@ -183,13 +203,15 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       <button class="sem-pill" data-branch="b-refugio">Refugio Data</button>
       <button class="sem-pill" data-branch="b-channels">Canales & Despacho</button>
       <button class="sem-pill" data-branch="b-ai">Inteligencia AI</button>
+      <button class="sem-pill" data-branch="b-bosque">Bosque Mágico</button>
+      <button class="sem-pill" data-branch="b-sisa">SISA</button>
       <button class="sem-pill" data-branch="b-infra">Infraestructura</button>
     </div>
 
     <!-- Contador de Sistemas -->
     <div class="sem-status-box">
       <span class="sem-dot-live"></span>
-      <span id="sem-count-display">10 / 10 Sistemas Conectados</span>
+      <span id="sem-count-display">{planetDefs.length} / {planetDefs.length} Sistemas Conectados</span>
       <button id="sem-reset-layout" class="sem-reset-btn" title="Restablecer posiciones del mapa base" aria-label="Restablecer posiciones del mapa">
         Restablecer
       </button>
@@ -202,7 +224,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   <!-- ════════════════ LIENZO INTERACTIVO (DESKTOP) ════════════════ -->
   <div class="sem-board-wrapper" id="sem-board-wrapper">
     <div class="sem-board" id="sem-board">
-      <svg class="sem-svg" viewBox="0 0 1440 940" preserveAspectRatio="xMidYMid meet">
+      <svg class="sem-svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet">
         <defs>
           <!-- Halo ambiental radial (orgánico, sin grilla) -->
           <radialGradient id="sem-ambient" cx="50%" cy="50%" r="65%">
@@ -212,7 +234,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
           </radialGradient>
         </defs>
 
-        <rect width="1440" height="940" fill="url(#sem-ambient)" />
+        <rect width="1600" height="1000" fill="url(#sem-ambient)" />
 
         <!-- ── LÍNEAS NIVEL 1: CENTRO -> PILARES (al ras de cada nodo) ── -->
         {level1Lines.map((l) => (
@@ -322,7 +344,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       <div>
         <span class="sem-mob-kicker">MATRIZ EMPRESARIAL</span>
         <h2 class="sem-mob-h2">Grupo Cordillera Blanca S.A.</h2>
-        <span class="sem-mob-meta">10 Sistemas y Módulos Activos</span>
+        <span class="sem-mob-meta">{planetDefs.length} Sistemas y Módulos Activos</span>
       </div>
     </div>
 
@@ -512,7 +534,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 .sem-board-wrapper {
   position: relative;
   width: 100%;
-  height: 940px;
+  height: 1000px;
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -522,8 +544,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
 .sem-board {
   position: relative;
-  width: 1440px;
-  height: 940px;
+  width: 1600px;
+  height: 1000px;
   transform-origin: top left;
 }
 
@@ -711,7 +733,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
 /* ── 3. NODOS HOJA: SISTEMAS INDIVIDUALES ───────────── */
 .sem-leaf {
-  width: 260px;
+  width: 230px;
   text-decoration: none;
 }
 
@@ -719,10 +741,10 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   background-color: var(--surface);
   border: 1px solid color-mix(in srgb, var(--leaf-accent, var(--gold)) 45%, transparent);
   border-radius: 14px;
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.5rem;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.03);
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
@@ -821,10 +843,14 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
 .sem-leaf-desc {
   font-family: var(--fb);
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--muted);
   line-height: 1.4;
   margin: 0.15rem 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .sem-leaf-foot {
@@ -1189,10 +1215,10 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     if (!wrapper || !board) return;
     const w = wrapper.clientWidth;
     if (!w) return;
-    const s = Math.min(w / 1440, (window.innerHeight * 0.74) / 940, 1);
+    const s = Math.min(w / 1600, (window.innerHeight * 0.74) / 1000, 1);
     board.style.transform = `scale(${s})`;
-    board.style.marginLeft = `${Math.max(0, (w - 1440 * s) / 2)}px`;
-    wrapper.style.height = `${Math.round(940 * s)}px`;
+    board.style.marginLeft = `${Math.max(0, (w - 1600 * s) / 2)}px`;
+    wrapper.style.height = `${Math.round(1000 * s)}px`;
   }
   const boardWrapper = document.getElementById('sem-board-wrapper');
   if (boardWrapper && typeof ResizeObserver !== 'undefined') {
@@ -1216,7 +1242,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     const HUB_ID = 'node-center-holding';
     const HUB_HALF = { hw: 175, hh: 95 };
     const BRANCH_HALF = { hw: 120, hh: 70 };
-    const LEAF_HALF = { hw: 145, hh: 122 };
+    const LEAF_HALF = { hw: 127, hh: 97 };
 
     interface DragNode {
       el: HTMLElement;
@@ -1310,8 +1336,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       Object.entries(saved).forEach(([id, p]) => {
         const n = nodes.get(id);
         if (n && n.kind !== 'hub' && Number.isFinite(p?.x) && Number.isFinite(p?.y)) {
-          n.x = clamp(p.x, 60, 1380);
-          n.y = clamp(p.y, 40, 900);
+          n.x = clamp(p.x, 60, 1540);
+          n.y = clamp(p.y, 40, 960);
         }
       });
     } catch {
@@ -1369,8 +1395,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
         drag.el.classList.add('is-dragging');
       }
       const s = boardScale();
-      n.x = clamp(drag.origX + dx / s, 60, 1380);
-      n.y = clamp(drag.origY + dy / s, 40, 900);
+      n.x = clamp(drag.origX + dx / s, 60, 1540);
+      n.y = clamp(drag.origY + dy / s, 40, 960);
       layoutNode(drag.id);
     });
 

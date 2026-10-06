@@ -1,5 +1,5 @@
 export type OrbitKey = 'inner' | 'middle' | 'outer';
-export type ProjectGroup = 'Refugio Data' | 'Sistema' | 'Descarga' | 'Herramienta';
+export type ProjectGroup = 'Refugio Data' | 'Sistema' | 'Descarga' | 'Herramienta' | 'Bosque Mágico' | 'SISA';
 
 export interface OrbitTheme {
   color: string;
@@ -56,6 +56,10 @@ export const planetDefs: PlanetDef[] = [
   { id: 'p-agenda', label: 'Agenda deportiva',      full: 'Agenda Deportiva · Refugio',  desc: 'Calendario oficial de eventos, activaciones y transmisiones deportivas',        href: 'https://softlanding-calendario-deportivo-gc-xi.vercel.app/', group: 'Descarga',     orbit: 'middle', phase: 270, speed: 0.20, dir: -1, icon: 'cal',   badge: 'Eventos', tag: 'Vercel', domain: 'vercel.app' },
   { id: 'p-ai',     label: 'Consultas GCB con AI',  full: 'Consultas Agente AI',         desc: 'Asistente corporativo de inteligencia artificial para análisis y soporte',      href: 'https://consultas.gcbprojects.site/',                group: 'Herramienta',  orbit: 'outer',  phase: 45,  speed: 0.13, dir:  1, icon: 'ai',      badge: 'Inteligencia Artificial', tag: 'AI Engine', domain: 'consultas.gcbprojects.site' },
   { id: 'p-conc',   label: 'Conciliación',          full: 'Conciliación Financiera',     desc: 'Auditoría automática, conciliación bancaria y liquidación de transacciones',   href: 'https://conciliacion.gcbprojects.site/',             group: 'Sistema',      orbit: 'outer',  phase: 225, speed: 0.13, dir:  1, icon: 'bal',     badge: 'Finanzas', tag: 'Fintech', domain: 'conciliacion.gcbprojects.site' },
+  { id: 'p-bosque', label: 'Bosque Mágico',         full: 'Bosque Mágico · Landing',    desc: 'Fiestas infantiles en Refugio: landing de eventos y celebraciones',               href: 'https://bosquemagico.gcbprojects.site/',              group: 'Bosque Mágico', orbit: 'middle', phase: 120, speed: 0.20, dir: -1, icon: 'play', badge: 'Eventos', tag: 'Landing', domain: 'bosquemagico.gcbprojects.site' },
+  { id: 'p-bosque-adm', label: 'Bosque Admin',      full: 'Bosque Mágico · Admin',       desc: 'Administración de reservas y eventos de Bosque Mágico',                          href: 'https://admin.bosquemagico.gcbprojects.site/',        group: 'Bosque Mágico', orbit: 'middle', phase: 300, speed: 0.20, dir: -1, icon: 'db',   badge: 'Gestión', tag: 'Admin', domain: 'bosquemagico.gcbprojects.site' },
+  { id: 'p-sisa',   label: 'SISA Reservas',         full: 'SISA · Plataforma',           desc: 'Plataforma de reservas SISA',                                                   href: 'https://sisa.reservaspe.com/',                          group: 'SISA',         orbit: 'outer',  phase: 135, speed: 0.13, dir:  1, icon: 'cal',    badge: 'Reservas', tag: 'Plataforma', domain: 'sisa.reservaspe.com' },
+  { id: 'p-sisa-reg', label: 'Registro SISA',       full: 'SISA · Registro',             desc: 'Formulario de registro SISA',                                                   href: 'https://sisa.reservaspe.com/registro',                group: 'SISA',         orbit: 'outer',  phase: 315, speed: 0.13, dir:  1, icon: 'doc',    badge: 'Registro', tag: 'Formulario', domain: 'sisa.reservaspe.com' },
 ];
 
 export const mobileOrbits: MobileOrbit[] = [
