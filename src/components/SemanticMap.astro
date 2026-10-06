@@ -241,13 +241,14 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   <!-- ════════════════ LIENZO INTERACTIVO (DESKTOP) ════════════════ -->
   <div class="sem-board-wrapper" id="sem-board-wrapper">
     <button id="sem-sidebar-toggle" class="sem-sidebar-toggle" aria-expanded="false" aria-controls="sem-sidebar" title="Mostrar u ocultar filtros">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <line x1="4" y1="6" x2="20" y2="6" />
-        <circle cx="9" cy="6" r="2" fill="var(--surface)" />
+      <svg class="icon-open" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <line x1="4" y1="7" x2="20" y2="7" />
         <line x1="4" y1="12" x2="20" y2="12" />
-        <circle cx="15" cy="12" r="2" fill="var(--surface)" />
-        <line x1="4" y1="18" x2="20" y2="18" />
-        <circle cx="7" cy="18" r="2" fill="var(--surface)" />
+        <line x1="4" y1="17" x2="20" y2="17" />
+      </svg>
+      <svg class="icon-close" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+        <line x1="6" y1="6" x2="18" y2="18" />
+        <line x1="18" y1="6" x2="6" y2="18" />
       </svg>
       <span>Filtros</span>
     </button>
@@ -421,7 +422,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   gap: 1.25rem;
 }
 
-/* ── Layout: sidebar izquierda + lienzo full-width ─── */
+/* ── Layout: sidebar + lienzo (el lienzo siempre va full-width) ─── */
 .sem-layout {
   display: flex;
   gap: 1.25rem;
@@ -429,8 +430,43 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   width: 100%;
 }
 
-.sem-layout.is-collapsed .sem-sidebar {
-  display: none;
+.sem-sidebar {
+  width: 272px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+/* ── Overlay mode (desktop): la sidebar flota ENCIMA del mapa, nunca
+   ocupa espacio en el layout ── */
+@media (min-width: 1081px) {
+  .sem-layout {
+    display: block;
+    position: relative;
+  }
+  .sem-layout .sem-sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    max-height: 100%;
+    overflow-y: auto;
+    z-index: 30;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+    transition: transform 0.25s ease-out, opacity 0.25s ease-out;
+  }
+  .sem-layout.is-collapsed .sem-sidebar {
+    transform: translateX(calc(-100% - 1.5rem));
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 /* Toggle flotante sobre el tablero (overlay, no ocupa espacio) */
@@ -438,7 +474,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   position: absolute;
   top: 0.75rem;
   left: 0.75rem;
-  z-index: 20;
+  z-index: 40;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -464,6 +500,20 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 .sem-sidebar-toggle[aria-expanded='true'] {
   color: var(--gold);
   border-color: var(--gold-border);
+}
+.sem-sidebar-toggle .icon-close {
+  display: none;
+}
+.sem-sidebar-toggle[aria-expanded='true'] .icon-close {
+  display: inline;
+}
+.sem-sidebar-toggle[aria-expanded='true'] .icon-open {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sem-layout .sem-sidebar {
+    transition: none;
+  }
 }
 
 .sem-sidebar {
@@ -1352,6 +1402,17 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
         /* noop */
       }
       apply();
+    });
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !collapsed) {
+        collapsed = true;
+        try {
+          localStorage.setItem(KEY, '1');
+        } catch {
+          /* noop */
+        }
+        apply();
+      }
     });
     apply();
   })();
