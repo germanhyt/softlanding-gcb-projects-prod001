@@ -346,7 +346,9 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
         >
           <div class="sem-leaf-box">
             <div class="sem-leaf-head">
-              <div class="sem-leaf-ico" set:html={icons[leaf.icon]} />
+              <div class="sem-leaf-ico">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[leaf.icon]} />
+              </div>
               <div class="sem-leaf-badges">
                 <span class="sem-leaf-tag">{leaf.tag}</span>
                 <span class="sem-leaf-badge">{leaf.badge}</span>
@@ -397,7 +399,9 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
           <div class="sem-mob-leaves">
             {b.leaves.map(leaf => (
               <a href={leaf.href} target="_blank" rel="noopener noreferrer" class="sem-mob-leaf">
-                <div class="sem-mob-leaf-ico" set:html={icons[leaf.icon]} />
+                <div class="sem-mob-leaf-ico">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[leaf.icon]} />
+                </div>
                 <div class="sem-mob-leaf-info">
                   <div class="sem-mob-leaf-top">
                     <span class="sem-mob-leaf-title">{leaf.name}</span>
@@ -911,10 +915,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   transition: transform 0.15s ease, border-color 0.15s ease;
 }
 
-.sem-branch:hover .sem-branch-box {
-  transform: translateY(-2px);
-  border-color: var(--gold);
-}
+/* Hovers con movimiento: solo con puntero fino (ver bloque @media más abajo) */
 
 .sem-branch-cat {
   font-family: var(--fb);
@@ -958,11 +959,24 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
-.sem-leaf:hover .sem-leaf-box {
-  transform: translateY(-3px);
-  border-color: var(--leaf-accent, var(--gold));
-  background-color: var(--card-bg);
-  box-shadow: 0 8px 28px color-mix(in srgb, var(--leaf-accent, var(--gold)) 22%, transparent);
+@media (hover: hover) and (pointer: fine) {
+  .sem-leaf:hover .sem-leaf-box {
+    transform: translateY(-3px);
+    border-color: var(--leaf-accent, var(--gold));
+    background-color: var(--card-bg);
+    box-shadow: 0 8px 28px color-mix(in srgb, var(--leaf-accent, var(--gold)) 22%, transparent);
+  }
+  .sem-branch:hover .sem-branch-box {
+    transform: translateY(-2px);
+    border-color: var(--gold);
+  }
+  .sem-leaf:hover .sem-leaf-name {
+    color: var(--leaf-accent, var(--gold));
+  }
+  .sem-leaf:hover .sem-leaf-arrow {
+    color: var(--leaf-accent, var(--gold));
+    transform: translate(2px, -2px);
+  }
 }
 .sem-leaf:active .sem-leaf-box {
   transform: scale(.98);
@@ -1035,19 +1049,12 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
   transition: color 0.15s ease;
 }
 
-.sem-leaf:hover .sem-leaf-name {
-  color: var(--leaf-accent, var(--gold));
-}
+/* Hovers con movimiento: solo con puntero fino (ver bloque @media más abajo) */
 
 .sem-leaf-arrow {
   font-size: 0.85rem;
   color: var(--dim);
   transition: transform 0.15s ease, color 0.15s ease;
-}
-
-.sem-leaf:hover .sem-leaf-arrow {
-  color: var(--leaf-accent, var(--gold));
-  transform: translate(2px, -2px);
 }
 
 .sem-leaf-desc {
@@ -1394,6 +1401,29 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       });
     });
 
+    // Hover sobre pilar: ilumina toda su familia (troncal + curvas hijas)
+    branchNodes.forEach(b => {
+      const bId = b.getAttribute('data-branch-id') || '';
+      const mainLine = bId ? document.getElementById(`line-${bId}`) : null;
+      const childLines = bId
+        ? Array.from(document.querySelectorAll(`.sem-line-sub[data-parent="line-${bId}"]`))
+        : [];
+      b.addEventListener('mouseenter', () => {
+        if (mainLine) {
+          mainLine.style.strokeOpacity = '1';
+          mainLine.style.strokeWidth = '3.5px';
+        }
+        childLines.forEach((l) => (l as SVGPathElement).classList.add('is-highlighted'));
+      });
+      b.addEventListener('mouseleave', () => {
+        if (mainLine) {
+          mainLine.style.strokeOpacity = '';
+          mainLine.style.strokeWidth = '';
+        }
+        childLines.forEach((l) => (l as SVGPathElement).classList.remove('is-highlighted'));
+      });
+    });
+
     // Hover sobre nodos hoja para iluminar líneas
     leafNodes.forEach(leaf => {
       const id = leaf.getAttribute('id');
@@ -1624,11 +1654,13 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       );
     }
 
-    function layoutNode(id: string) {
+    // GPU: el movimiento en vivo va por transform (compositor); al soltar
+    // se consolida en left/top. Así no se toca layout por frame.
+    const BASE_TX = 'translate(-50%, -50%)';
+
+    function updatePaths(id: string) {
       const n = nodes.get(id);
       if (!n) return;
-      n.el.style.left = `${n.x}px`;
-      n.el.style.top = `${n.y}px`;
       const hub = nodes.get(HUB_ID);
       if (n.kind === 'branch' && hub) {
         const p1 = edgePoint(hub.x, hub.y, HUB_HALF.hw, HUB_HALF.hh, n.x - hub.x, n.y - hub.y);
@@ -1640,6 +1672,14 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       } else if (n.kind === 'leaf') {
         layoutLeaf(n);
       }
+    }
+
+    function layoutNode(id: string) {
+      const n = nodes.get(id);
+      if (!n) return;
+      n.el.style.left = `${n.x}px`;
+      n.el.style.top = `${n.y}px`;
+      updatePaths(id);
     }
 
     // Aplicar layout guardado (si existe) sobre el mapa base
@@ -1709,12 +1749,20 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       const s = boardScale();
       n.x = clamp(drag.origX + dx / s, 60, 1540);
       n.y = clamp(drag.origY + dy / s, 40, 960);
-      layoutNode(drag.id);
+      drag.el.style.transform = `${BASE_TX} translate(${n.x - drag.origX}px, ${n.y - drag.origY}px)`;
+      updatePaths(drag.id);
     });
 
     function endDrag() {
       if (!drag) return;
       const wasMoved = drag.moved;
+      // Consolidar: escribir la posición final en left/top y limpiar el transform
+      const n = nodes.get(drag.id);
+      if (n && wasMoved) {
+        n.el.style.left = `${n.x}px`;
+        n.el.style.top = `${n.y}px`;
+      }
+      drag.el.style.transform = '';
       drag.el.classList.remove('is-dragging');
       drag = null;
       if (!wasMoved) return;
@@ -1741,6 +1789,13 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     window.addEventListener('pointerup', endDrag);
     window.addEventListener('pointercancel', () => {
       if (drag) {
+        const n = nodes.get(drag.id);
+        if (n && drag.moved) {
+          n.x = drag.origX;
+          n.y = drag.origY;
+          updatePaths(drag.id);
+        }
+        drag.el.style.transform = '';
         drag.el.classList.remove('is-dragging');
         drag = null;
       }

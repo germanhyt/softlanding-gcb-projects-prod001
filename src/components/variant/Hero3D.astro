@@ -196,9 +196,11 @@
     color: #0A0A0A;
     box-shadow: 0 0 28px rgba(201, 168, 76, 0.25);
   }
-  .variant-cta-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 0 32px rgba(201, 168, 76, 0.4);
+  @media (hover: hover) and (pointer: fine) {
+    .variant-cta-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 32px rgba(201, 168, 76, 0.4);
+    }
   }
   .variant-cta-secondary {
     background: transparent;

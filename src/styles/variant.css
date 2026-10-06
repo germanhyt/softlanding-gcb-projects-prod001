@@ -103,11 +103,18 @@ html {
               border-color 0.25s var(--ease-variant);
 }
 
-.variant-card:hover,
 .variant-card:focus-within {
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
   border-color: var(--color-variant-border-strong);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .variant-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+    border-color: var(--color-variant-border-strong);
+  }
 }
 
 /* ── Parallax scroll-driven (graceful fallback si no soportado) ── */

@@ -760,10 +760,12 @@ html.dark .cbody {
   backdrop-filter: blur(8px);
   transition: border-color .2s, box-shadow .2s, transform .2s, background .3s;
 }
-.mob-card:hover {
-  border-color: var(--mc);
-  box-shadow: 0 0 22px var(--mg);
-  transform: translateX(5px);
+@media (hover: hover) and (pointer: fine) {
+  .mob-card:hover {
+    border-color: var(--mc);
+    box-shadow: 0 0 22px var(--mg);
+    transform: translateX(5px);
+  }
 }
 .mob-card:active {
   transform: scale(.98);

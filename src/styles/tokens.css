@@ -4,6 +4,39 @@
    Claro por defecto; oscuro vía `html.dark` (Layout/Dashboard) o
    `html[data-theme="dark"]` (VariantLayout). */
 
+/* ── Baseline mobile-native (Emil Kowalski) ───────── */
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+button,
+a,
+[role='button'] {
+  touch-action: manipulation;
+}
+
+button,
+[role='button'] {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Reduced motion global: congela decoración infinita ── */
+@media (prefers-reduced-motion: reduce) {
+  .star-p,
+  .nebula,
+  .ring-i,
+  .ring-m,
+  .ring-o,
+  .ch-1,
+  .ch-2,
+  .ch-3,
+  .sem-line-pulse {
+    animation: none !important;
+  }
+}
+
 /* ── Light mode (default) ─────────────────────────────── */
 :root {
   --fd: 'Work Sans', sans-serif;

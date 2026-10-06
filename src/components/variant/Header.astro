@@ -46,8 +46,10 @@
     cursor: pointer;
     transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
   }
-  .theme-btn:hover {
-    transform: scale(1.05);
+  @media (hover: hover) and (pointer: fine) {
+    .theme-btn:hover {
+      transform: scale(1.05);
+    }
   }
   .theme-btn:active {
     transform: scale(0.96);

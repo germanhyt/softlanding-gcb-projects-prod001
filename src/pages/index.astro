@@ -1,8 +1,10 @@
 ---
 import VariantLayout from '../layouts/VariantLayout.astro';
 import SemanticMap from '../components/SemanticMap.astro';
+import { planetDefs } from '../data/projects.ts';
 
 const year = new Date().getFullYear();
+const systemCount = planetDefs.length;
 ---
 
 <VariantLayout
@@ -31,14 +33,14 @@ const year = new Date().getFullYear();
 
       <p class="max-w-2xl text-sm sm:text-lg" style="color: var(--color-variant-text-muted);">
         De la identidad al ecosistema: deslizá para recorrer el mapa semántico
-        que entrelaza nuestros cuatro pilares y diez plataformas.
+        que entrelaza nuestros siete pilares y {systemCount} plataformas.
       </p>
 
       <span
         class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest"
         style="color: var(--color-variant-gold); border: 1px solid var(--color-variant-border); background-color: rgba(201,168,76,0.08);"
       >
-        Presentación corporativa · 10 sistemas
+        Presentación corporativa · {systemCount} sistemas
       </span>
     </div>
 
@@ -73,17 +75,13 @@ const year = new Date().getFullYear();
 </VariantLayout>
 
 <style>
-  /* Snap suave: si el scroll queda a medias, la sección más cercana se asienta sola */
-  html {
-    scroll-snap-type: y proximity;
-  }
-  /* Sticky scroll: la portada queda fija y el mapa la cubre como otra página */
+  /* Sticky scroll: la portada queda fija y el mapa la cubre como otra página
+     (el suavizado lo pone Lenis; sin scroll-snap para no pelear con él) */
   .pres-hero {
     position: sticky;
     top: 0;
     height: 100svh;
     z-index: 1;
-    scroll-snap-align: start;
   }
   .pres-map {
     position: relative;
@@ -92,7 +90,6 @@ const year = new Date().getFullYear();
     display: flex;
     flex-direction: column;
     justify-content: center;
-    scroll-snap-align: start;
     background-color: var(--color-variant-bg);
     border-top: 1px solid var(--color-variant-border);
     box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.55);
@@ -144,7 +141,7 @@ const year = new Date().getFullYear();
   }
   @media (prefers-reduced-motion: reduce) {
     .pres-scroll-chevron { animation: none; }
-    html { scroll-behavior: auto; scroll-snap-type: none; }
+    html { scroll-behavior: auto; }
   }
 </style>
 
@@ -157,6 +154,23 @@ const year = new Date().getFullYear();
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   if (!reduced) {
+    // Lenis: scroll mantecoso nativo (autoRaf) + triggers sincronizados
+    const { default: Lenis } = await import('lenis');
+    const lenis = new Lenis({ autoRaf: true, lerp: 0.1 });
+    lenis.on('scroll', ScrollTrigger.update);
+
+    // Anclas internas via Lenis (el cue de scroll baja suave al mapa)
+    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+      a.addEventListener('click', (e: MouseEvent) => {
+        const id = a.getAttribute('href');
+        const target = id && id.length > 1 ? document.querySelector(id) : null;
+        if (target) {
+          e.preventDefault();
+          lenis.scrollTo(target as HTMLElement);
+        }
+      });
+    });
+
     // Portada: salida sedosa mientras el mapa la cubre (sube, se achica y disuelve)
     gsap.to('#pres-hero-content', {
       yPercent: -14,
