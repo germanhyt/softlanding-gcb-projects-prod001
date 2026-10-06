@@ -25,10 +25,10 @@ export const branchPositions: Record<string, NodePosition> = {
 
 /** Posición de las 14 hojas (lo único que vive aquí; el contenido viene de projects.ts). */
 export const leafPositions: Record<string, NodePosition> = {
-  'p-proc': { x: 150, y: 130 },
-  'p-del': { x: 150, y: 330 },
-  'p-com': { x: 150, y: 530 },
-  'p-docgcb': { x: 150, y: 730 },
+  'p-proc': { x: 160, y: 130 },
+  'p-del': { x: 160, y: 330 },
+  'p-com': { x: 160, y: 530 },
+  'p-docgcb': { x: 160, y: 730 },
   'p-kiosk': { x: 1440, y: 310 },
   'p-runner': { x: 1440, y: 510 },
   'p-bosque': { x: 435, y: 108 },
