@@ -59,11 +59,11 @@ const leafLayout = leafPositions;
 
 const branchLeafIds: Record<string, string[]> = {
   'b-refugio': ['p-proc', 'p-del', 'p-com', 'p-docgcb'],
-  'b-channels': ['p-kiosk', 'p-runner', 'p-agenda'],
-  'b-bosque': ['p-bosque', 'p-bosque-adm'],
-  'b-sisa': ['p-sisa', 'p-sisa-reg'],
+  'b-channels': ['p-kiosk', 'p-runner'],
+  'b-entretenimiento': ['p-bosque', 'p-bosque-adm', 'p-agenda'],
   'b-ai': ['p-ai'],
-  'b-infra': ['p-est', 'p-conc'],
+  'b-reservas': ['p-est', 'p-sisa', 'p-sisa-reg'],
+  'b-finanzas': ['p-conc'],
 };
 
 function leafFromProject(id: string): MapLeaf {
@@ -96,21 +96,21 @@ const branches: MapBranch[] = [
   },
   {
     id: 'b-channels',
-    title: 'Canales & Despacho',
-    desc: 'Venta Directa & Movilidad',
-    category: 'Puntos de Venta',
+    title: 'Canales de Venta',
+    desc: 'Punto de Venta & Despacho',
+    category: 'Canales',
     ...branchPositions['b-channels'],
     accent: '#3CC9A4',
     leaves: branchLeafIds['b-channels']!.map(leafFromProject),
   },
   {
-    id: 'b-bosque',
-    title: 'Bosque Mágico',
-    desc: 'Fiestas & Eventos',
-    category: 'Entretenimiento',
-    ...branchPositions['b-bosque'],
+    id: 'b-entretenimiento',
+    title: 'Entretenimiento',
+    desc: 'Fiestas, Eventos & Cartelera',
+    category: 'Eventos',
+    ...branchPositions['b-entretenimiento'],
     accent: '#FF8C42',
-    leaves: branchLeafIds['b-bosque']!.map(leafFromProject),
+    leaves: branchLeafIds['b-entretenimiento']!.map(leafFromProject),
   },
   {
     id: 'b-ai',
@@ -122,22 +122,22 @@ const branches: MapBranch[] = [
     leaves: branchLeafIds['b-ai']!.map(leafFromProject),
   },
   {
-    id: 'b-sisa',
-    title: 'SISA Reservas',
-    desc: 'Reservas & Registro',
-    category: 'Reservas',
-    ...branchPositions['b-sisa'],
-    accent: '#FF6B8E',
-    leaves: branchLeafIds['b-sisa']!.map(leafFromProject),
+    id: 'b-reservas',
+    title: 'Reservas & Acceso',
+    desc: 'Reservas, accesos y aforo',
+    category: 'Acceso',
+    ...branchPositions['b-reservas'],
+    accent: '#9B6DFF',
+    leaves: branchLeafIds['b-reservas']!.map(leafFromProject),
   },
   {
-    id: 'b-infra',
-    title: 'Infraestructura & Finanzas',
-    desc: 'Operaciones Físicas y Tesorería',
-    category: 'Sistemas Soporte',
-    ...branchPositions['b-infra'],
-    accent: '#9B6DFF',
-    leaves: branchLeafIds['b-infra']!.map(leafFromProject),
+    id: 'b-finanzas',
+    title: 'Finanzas',
+    desc: 'Conciliación & Auditoría',
+    category: 'Finanzas',
+    ...branchPositions['b-finanzas'],
+    accent: '#FF6B8E',
+    leaves: branchLeafIds['b-finanzas']!.map(leafFromProject),
   },
 ];
 
@@ -201,10 +201,11 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     <div class="sem-pills">
       <button class="sem-pill is-active" data-branch="all">Todas las ramas</button>
       <button class="sem-pill" data-branch="b-refugio">Refugio Data</button>
-      <button class="sem-pill" data-branch="b-channels">Canales & Despacho</button>
+      <button class="sem-pill" data-branch="b-channels">Canales de Venta</button>
+      <button class="sem-pill" data-branch="b-entretenimiento">Entretenimiento</button>
       <button class="sem-pill" data-branch="b-ai">Inteligencia AI</button>
-      <button class="sem-pill" data-branch="b-bosque">Bosque Mágico</button>
-      <button class="sem-pill" data-branch="b-sisa">SISA</button>
+      <button class="sem-pill" data-branch="b-reservas">Reservas & Acceso</button>
+      <button class="sem-pill" data-branch="b-finanzas">Finanzas</button>
       <button class="sem-pill" data-branch="b-infra">Infraestructura</button>
     </div>
 
