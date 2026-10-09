@@ -15,7 +15,7 @@ const KNOWN_LEAVES = [
   'p-proc', 'p-del', 'p-com', 'p-docgcb',
   'p-kiosk', 'p-runner', 'p-agenda',
   'p-bosque', 'p-bosque-adm',
-  'p-ai',
+  'p-ai', 'p-n8n',
   'p-sisa', 'p-sisa-reg',
   'p-est',
   'p-conc', 'p-oc',
