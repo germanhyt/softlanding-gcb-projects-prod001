@@ -11,58 +11,64 @@ const systemCount = planetDefs.length;
   title="Grupo Cordillera Blanca SA"
   description="Portal de acceso a los sistemas y aplicaciones de Grupo Cordillera Blanca SA."
 >
-  <!-- ═══ PÁGINA 1: PORTADA (sticky: la página 2 la cubre al scrollear) ═══ -->
-  <section id="pres-hero" class="pres-hero relative flex items-center justify-center overflow-hidden">
-    <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
-      <img
-        src="/logo-gcb.jpg"
-        alt="GCB — Grupo Cordillera Blanca SA"
-        width="112"
-        height="112"
-        class="rounded-3xl block"
-        style="box-shadow: 0 0 0 1px var(--color-variant-border), 0 24px 64px rgba(0,0,0,0.5);"
-        fetchpriority="high"
-      />
+  <!-- Pista horizontal (desktop): Portada → Mapa como slides -->
+  <div id="hwrap">
+    <div id="htrack">
+      <!-- ═══ SLIDE 1: PORTADA ═══ -->
+      <section id="pres-hero" class="pres-hero relative flex items-center justify-center overflow-hidden">
+        <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
+          <img
+            src="/logo-gcb.jpg"
+            alt="GCB — Grupo Cordillera Blanca SA"
+            width="112"
+            height="112"
+            class="rounded-3xl block"
+            style="box-shadow: 0 0 0 1px var(--color-variant-border), 0 24px 64px rgba(0,0,0,0.5);"
+            fetchpriority="high"
+          />
 
-      <h1 class="variant-heading font-bold leading-none">
-        <span class="block text-5xl sm:text-7xl" style="color: var(--color-variant-gold);">Grupo Cordillera Blanca</span>
-        <span class="mt-3 block text-xl sm:text-2xl font-medium" style="color: var(--color-variant-text-muted);">
-          Sociedad Anónima · Portal Central de Sistemas
-        </span>
-      </h1>
+          <h1 class="variant-heading font-bold leading-none">
+            <span class="block text-5xl sm:text-7xl" style="color: var(--color-variant-gold);">Grupo Cordillera Blanca</span>
+            <span class="mt-3 block text-xl sm:text-2xl font-medium" style="color: var(--color-variant-text-muted);">
+              Sociedad Anónima · Portal Central de Sistemas
+            </span>
+          </h1>
 
-      <p class="max-w-2xl text-sm sm:text-lg" style="color: var(--color-variant-text-muted);">
-        De la identidad al ecosistema: deslizá para recorrer el mapa semántico
-        que entrelaza nuestros siete pilares y {systemCount} plataformas.
-      </p>
+          <p class="max-w-2xl text-sm sm:text-lg" style="color: var(--color-variant-text-muted);">
+            De la identidad al ecosistema: deslizá para recorrer el mapa semántico
+            que entrelaza nuestros siete pilares y {systemCount} plataformas.
+          </p>
 
-      <span
-        class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest"
-        style="color: var(--color-variant-gold); border: 1px solid var(--color-variant-border); background-color: rgba(201,168,76,0.08);"
-      >
-        Presentación corporativa · {systemCount} sistemas
-      </span>
+          <span
+            class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest"
+            style="color: var(--color-variant-gold); border: 1px solid var(--color-variant-border); background-color: rgba(201,168,76,0.08);"
+          >
+            Presentación corporativa · {systemCount} sistemas
+          </span>
+        </div>
+
+        <!-- Scroll cue animado (en horizontal apunta a la derecha) -->
+        <a
+          href="#pres-map"
+          id="pres-cue"
+          class="pres-scroll-cue"
+          aria-label="Deslizar hacia el mapa de sistemas"
+        >
+          <span class="text-[10px] uppercase tracking-widest" style="color: var(--color-variant-text-muted);">Scroll</span>
+          <svg class="pres-scroll-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-variant-gold);">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </a>
+      </section>
+
+      <!-- ═══ SLIDE 2: MAPA SEMÁNTICO ═══ -->
+      <section id="pres-map" class="pres-map relative py-10 sm:py-14">
+        <div id="pres-map-inner" class="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
+          <SemanticMap />
+        </div>
+      </section>
     </div>
-
-    <!-- Scroll cue animado -->
-    <a
-      href="#pres-map"
-      class="pres-scroll-cue"
-      aria-label="Deslizar hacia el mapa de sistemas"
-    >
-      <span class="text-[10px] uppercase tracking-widest" style="color: var(--color-variant-text-muted);">Scroll</span>
-      <svg class="pres-scroll-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-variant-gold);">
-        <polyline points="6 9 12 15 18 9" />
-      </svg>
-    </a>
-  </section>
-
-  <!-- ═══ PÁGINA 2: MAPA SEMÁNTICO (cubre la portada al scrollear) ═══ -->
-  <section id="pres-map" class="pres-map relative py-10 sm:py-14">
-    <div id="pres-map-inner" class="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
-      <SemanticMap />
-    </div>
-  </section>
+  </div>
 
   <footer class="pres-footer">
     <p>© {year} Grupo Cordillera Blanca SA</p>
@@ -75,8 +81,8 @@ const systemCount = planetDefs.length;
 </VariantLayout>
 
 <style>
-  /* Sticky scroll: la portada queda fija y el mapa la cubre como otra página
-     (el suavizado lo pone Lenis; sin scroll-snap para no pelear con él) */
+  /* ── Vertical (móvil / reduced-motion / sin JS): portada sticky y el
+     mapa la cubre como otra página ── */
   .pres-hero {
     position: sticky;
     top: 0;
@@ -95,6 +101,38 @@ const systemCount = planetDefs.length;
     box-shadow: 0 -24px 64px rgba(0, 0, 0, 0.55);
     padding-bottom: 3rem;
   }
+
+  /* ── Horizontal (desktop con motion): pista de 2 slides ── */
+  @media (min-width: 1024px) {
+    #hwrap {
+      overflow: hidden;
+    }
+    #htrack {
+      display: flex;
+      width: max-content;
+      height: 100svh;
+    }
+    #htrack > section {
+      width: 100vw;
+      height: 100svh;
+      flex-shrink: 0;
+    }
+    .pres-hero {
+      position: relative;
+    }
+    .pres-map {
+      min-height: 100svh;
+      border-top: none;
+      border-left: 1px solid var(--color-variant-border);
+      box-shadow: -24px 0 64px rgba(0, 0, 0, 0.55);
+      overflow-y: auto;
+    }
+    /* El cue apunta a la derecha en modo horizontal */
+    #htrack .pres-scroll-cue svg {
+      rotate: -90deg;
+    }
+  }
+
   .pres-scroll-cue {
     position: absolute;
     bottom: 1.75rem;
@@ -152,83 +190,156 @@ const systemCount = planetDefs.length;
   gsap.registerPlugin(ScrollTrigger);
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wide = window.matchMedia('(min-width: 1024px)').matches;
 
   if (!reduced) {
-    // Lenis: scroll mantecoso nativo (autoRaf) + triggers sincronizados
+    // Lenis: scroll mantecoso (autoRaf) + triggers sincronizados
     const { default: Lenis } = await import('lenis');
     const lenis = new Lenis({ autoRaf: true, lerp: 0.1 });
     lenis.on('scroll', ScrollTrigger.update);
 
-    // Anclas internas via Lenis (el cue de scroll baja suave al mapa)
-    document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
-      a.addEventListener('click', (e: MouseEvent) => {
-        const id = a.getAttribute('href');
-        const target = id && id.length > 1 ? document.querySelector(id) : null;
-        if (target) {
-          e.preventDefault();
-          lenis.scrollTo(target as HTMLElement);
+    // Líneas del mapa: dibujado progresivo (helper compartido)
+    const prepLines = () => {
+      const lines = Array.from(
+        document.querySelectorAll<SVGPathElement>('#pres-map .sem-line-main, #pres-map .sem-line-sub')
+      );
+      lines.forEach((line) => {
+        try {
+          const len = line.getTotalLength();
+          line.style.strokeDasharray = `${len}`;
+          line.style.strokeDashoffset = `${len}`;
+        } catch {
+          /* paths no medibles: quedan visibles sin animación */
         }
       });
-    });
+      return lines.filter((l) => l.style.strokeDashoffset !== '');
+    };
 
-    // Portada: salida sedosa mientras el mapa la cubre (sube, se achica y disuelve)
-    gsap.to('#pres-hero-content', {
-      yPercent: -14,
-      scale: 0.96,
-      opacity: 0.1,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '#pres-hero',
-        start: 'top top',
-        end: 'bottom top',
-        scrub: 0.6,
-      },
-    });
+    if (wide) {
+      // ── Slides horizontales: la pista se desplaza con pin + scrub ──
+      const track = document.getElementById('htrack') as HTMLElement;
+      const getX = () => Math.max(0, track.scrollWidth - window.innerWidth);
+      const slide = gsap.to(track, {
+        x: () => -getX(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#hwrap',
+          start: 'top top',
+          end: () => `+=${getX()}`,
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
 
-    // Página 2: transición tipo pase de página (entra desde abajo con presencia:
-    // opacity + desplazamiento + escala sutil, bien visible en scroll manual)
-    gsap.from('#pres-map-inner', {
-      y: 90,
-      opacity: 0,
-      scale: 0.97,
-      duration: 1.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: '#pres-map',
-        start: 'top 92%',
-        toggleActions: 'play none none reverse',
-      },
-    });
+      // El cue salta al final del recorrido (slide del mapa)
+      document.getElementById('pres-cue')?.addEventListener('click', (e: MouseEvent) => {
+        e.preventDefault();
+        lenis.scrollTo(slide.scrollTrigger!.end);
+      });
 
-    // Líneas del mapa: dibujado progresivo al entrar a la sección
-    const lines = Array.from(
-      document.querySelectorAll<SVGPathElement>('#pres-map .sem-line-main, #pres-map .sem-line-sub')
-    );
-    lines.forEach((line) => {
-      try {
-        const len = line.getTotalLength();
-        line.style.strokeDasharray = `${len}`;
-        line.style.strokeDashoffset = `${len}`;
-      } catch {
-        /* paths no medibles: quedan visibles sin animación */
-      }
-    });
-    const drawable = lines.filter((l) => l.style.strokeDashoffset !== '');
-    if (drawable.length > 0) {
-      gsap.to(drawable, {
-        strokeDashoffset: 0,
-        duration: 1.4,
-        ease: 'power2.out',
-        stagger: 0.05,
+      // Portada: se disuelve mientras sale por la izquierda
+      gsap.to('#pres-hero-content', {
+        xPercent: -6,
+        opacity: 0.15,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#pres-hero',
+          containerAnimation: slide,
+          start: 'left left',
+          end: 'right left',
+          scrub: true,
+        },
+      });
+
+      // Mapa: entra con presencia al llegar su slide
+      gsap.from('#pres-map-inner', {
+        opacity: 0,
+        scale: 0.98,
+        duration: 0.9,
+        ease: 'power3.out',
         scrollTrigger: {
           trigger: '#pres-map',
-          start: 'top 70%',
+          containerAnimation: slide,
+          start: 'left 75%',
           toggleActions: 'play none none reverse',
         },
       });
+
+      const drawable = prepLines();
+      if (drawable.length > 0) {
+        gsap.to(drawable, {
+          strokeDashoffset: 0,
+          duration: 1.4,
+          ease: 'power2.out',
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: '#pres-map',
+            containerAnimation: slide,
+            start: 'left 60%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
+    } else {
+      // ── Vertical (móvil): portada sticky + mapa que la cubre ──
+      document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
+        a.addEventListener('click', (e: MouseEvent) => {
+          const id = a.getAttribute('href');
+          const target = id && id.length > 1 ? document.querySelector(id) : null;
+          if (target) {
+            e.preventDefault();
+            lenis.scrollTo(target as HTMLElement);
+          }
+        });
+      });
+
+      gsap.to('#pres-hero-content', {
+        yPercent: -14,
+        scale: 0.96,
+        opacity: 0.1,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '#pres-hero',
+          start: 'top top',
+          end: 'bottom top',
+          scrub: 0.6,
+        },
+      });
+
+      gsap.from('#pres-map-inner', {
+        y: 90,
+        opacity: 0,
+        scale: 0.97,
+        duration: 1.2,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#pres-map',
+          start: 'top 92%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      const drawable = prepLines();
+      if (drawable.length > 0) {
+        gsap.to(drawable, {
+          strokeDashoffset: 0,
+          duration: 1.4,
+          ease: 'power2.out',
+          stagger: 0.05,
+          scrollTrigger: {
+            trigger: '#pres-map',
+            start: 'top 70%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      }
     }
 
     // Recalcular posiciones tras la carga (logo/fuentes mueven el layout)
     window.addEventListener('load', () => ScrollTrigger.refresh());
+    if (document.fonts) {
+      document.fonts.ready.then(() => ScrollTrigger.refresh());
+    }
   }
 </script>
