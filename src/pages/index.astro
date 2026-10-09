@@ -72,13 +72,13 @@ const systemCount = planetDefs.length;
 
   <footer class="pres-footer">
     <p>© {year} Grupo Cordillera Blanca SA</p>
+    <span aria-hidden="true">·</span>
     <nav aria-label="Vistas del portal">
       <a href="/portal">Portal clásico</a>
       <span aria-hidden="true">·</span>
       <a href="/variant">Variante 3D</a>
     </nav>
-  </footer>
-</VariantLayout>
+  </footer></VariantLayout>
 
 <style>
   /* ── Vertical (móvil / reduced-motion / sin JS): portada sticky y el
@@ -158,12 +158,17 @@ const systemCount = planetDefs.length;
     background-color: var(--color-variant-bg);
     border-top: 1px solid var(--color-variant-border);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.4rem;
-    padding: 1.25rem 1rem;
-    font-size: 0.72rem;
+    justify-content: center;
+    gap: 0.35rem 0.5rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.68rem;
     color: var(--color-variant-text-muted);
+  }
+  .pres-footer p {
+    margin: 0;
   }
   .pres-footer nav {
     display: flex;
