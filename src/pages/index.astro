@@ -62,7 +62,7 @@ const systemCount = planetDefs.length;
       </section>
 
       <!-- ═══ SLIDE 2: MAPA SEMÁNTICO ═══ -->
-      <section id="pres-map" class="pres-map relative py-10 sm:py-14">
+      <section id="pres-map" class="pres-map relative py-4 sm:py-6">
         <div id="pres-map-inner" class="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
           <SemanticMap />
         </div>
@@ -74,8 +74,6 @@ const systemCount = planetDefs.length;
     <p>© {year} Grupo Cordillera Blanca SA</p>
     <span aria-hidden="true">·</span>
     <nav aria-label="Vistas del portal">
-      <a href="/portal">Portal clásico</a>
-      <span aria-hidden="true">·</span>
       <a href="/variant">Variante 3D</a>
     </nav>
   </footer></VariantLayout>
@@ -198,6 +196,15 @@ const systemCount = planetDefs.length;
   const wide = window.matchMedia('(min-width: 1024px)').matches;
 
   if (!reduced) {
+    // Entrada de la portada al cargar (fade + rise escalonado)
+    gsap.from('#pres-hero-content > *', {
+      y: 28,
+      opacity: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+      stagger: 0.09,
+    });
+
     // Lenis: scroll mantecoso (autoRaf) + triggers sincronizados
     const { default: Lenis } = await import('lenis');
     const lenis = new Lenis({ autoRaf: true, lerp: 0.1 });
