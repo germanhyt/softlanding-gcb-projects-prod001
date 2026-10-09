@@ -23,7 +23,7 @@ export const branchPositions: Record<string, NodePosition> = {
   'b-finanzas': { x: 1300, y: 700 },
 };
 
-/** Posición de las 14 hojas (lo único que vive aquí; el contenido viene de projects.ts). */
+/** Posición de las 15 hojas (lo único que vive aquí; el contenido viene de projects.ts). */
 export const leafPositions: Record<string, NodePosition> = {
   'p-proc': { x: 160, y: 130 },
   'p-del': { x: 160, y: 330 },
@@ -39,4 +39,5 @@ export const leafPositions: Record<string, NodePosition> = {
   'p-sisa-reg': { x: 730, y: 890 },
   'p-est': { x: 1030, y: 890 },
   'p-conc': { x: 1330, y: 880 },
+  'p-oc': { x: 1620, y: 950 },
 };

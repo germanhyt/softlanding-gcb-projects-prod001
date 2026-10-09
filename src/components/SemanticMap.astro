@@ -64,7 +64,7 @@ const branchLeafIds: Record<string, string[]> = {
   'b-ai': ['p-ai'],
   'b-sisa': ['p-sisa', 'p-sisa-reg'],
   'b-parking': ['p-est'],
-  'b-finanzas': ['p-conc'],
+  'b-finanzas': ['p-conc', 'p-oc'],
 };
 
 function leafFromProject(id: string): MapLeaf {
@@ -258,7 +258,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       <button id="sem-zoom-in" class="sem-zoom-btn" aria-label="Ampliar zoom">+</button>
     </div>
     <div class="sem-board" id="sem-board">
-      <svg class="sem-svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid meet">
+      <svg class="sem-svg" viewBox="0 0 1840 1120" preserveAspectRatio="xMidYMid meet">
         <defs>
           <!-- Halo ambiental radial (orgánico, sin grilla) -->
           <radialGradient id="sem-ambient" cx="50%" cy="50%" r="65%">
@@ -268,7 +268,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
           </radialGradient>
         </defs>
 
-        <rect width="1600" height="1000" fill="url(#sem-ambient)" />
+        <rect width="1840" height="1120" fill="url(#sem-ambient)" />
 
         <!-- ── LÍNEAS NIVEL 1: CENTRO -> PILARES (al ras de cada nodo) ── -->
         {level1Lines.map((l) => (
@@ -747,7 +747,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 .sem-board-wrapper {
   position: relative;
   width: 100%;
-  height: 1000px;
+  height: 1120px;
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -757,8 +757,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
 
 .sem-board {
   position: relative;
-  width: 1600px;
-  height: 1000px;
+  width: 1840px;
+  height: 1120px;
   transform-origin: top left;
 }
 
@@ -1511,10 +1511,10 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
     const w = wrapper.clientWidth;
     if (!w) return;
     const zoom = parseFloat(board.dataset.zoom || '1') || 1;
-    const s = Math.min(w / 1600, (window.innerHeight * 0.74) / 1000, 1) * zoom;
+    const s = Math.min(w / 1840, (window.innerHeight * 0.74) / 1120, 1) * zoom;
     board.style.transform = `scale(${s})`;
-    board.style.marginLeft = `${Math.max(0, (w - 1600 * s) / 2)}px`;
-    wrapper.style.height = `${Math.round(1000 * s)}px`;
+    board.style.marginLeft = `${Math.max(0, (w - 1840 * s) / 2)}px`;
+    wrapper.style.height = `${Math.round(1120 * s)}px`;
     const label = document.getElementById('sem-zoom-reset');
     if (label) label.textContent = `${Math.round(s * 100)}%`;
   }
@@ -1688,8 +1688,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       Object.entries(saved).forEach(([id, p]) => {
         const n = nodes.get(id);
         if (n && n.kind !== 'hub' && Number.isFinite(p?.x) && Number.isFinite(p?.y)) {
-          n.x = clamp(p.x, 60, 1540);
-          n.y = clamp(p.y, 40, 960);
+          n.x = clamp(p.x, 60, 1640);
+          n.y = clamp(p.y, 40, 1000);
         }
       });
     } catch {
@@ -1747,8 +1747,8 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
         drag.el.classList.add('is-dragging');
       }
       const s = boardScale();
-      n.x = clamp(drag.origX + dx / s, 60, 1540);
-      n.y = clamp(drag.origY + dy / s, 40, 960);
+      n.x = clamp(drag.origX + dx / s, 60, 1640);
+      n.y = clamp(drag.origY + dy / s, 40, 1000);
       drag.el.style.transform = `${BASE_TX} translate(${n.x - drag.origX}px, ${n.y - drag.origY}px)`;
       updatePaths(drag.id);
     });

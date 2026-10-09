@@ -14,7 +14,11 @@ const KNOWN_BRANCHES = ['b-refugio', 'b-channels', 'b-bosque', 'b-ai', 'b-sisa',
 const KNOWN_LEAVES = [
   'p-proc', 'p-del', 'p-com', 'p-docgcb',
   'p-kiosk', 'p-runner', 'p-agenda',
-  'p-ai', 'p-est', 'p-conc',
+  'p-bosque', 'p-bosque-adm',
+  'p-ai',
+  'p-sisa', 'p-sisa-reg',
+  'p-est',
+  'p-conc', 'p-oc',
 ];
 
 function sanitizeSection(input, known) {
