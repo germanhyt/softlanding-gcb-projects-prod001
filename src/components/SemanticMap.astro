@@ -1696,6 +1696,10 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
       /* sin layout guardado: se usa el mapa base */
     }
     nodes.forEach((n, id) => {
+      if (n.kind === 'hub') return;
+      // OJO: escribir left/top de TODOS (layoutNode solo pinta paths en hojas)
+      n.el.style.left = `${n.x}px`;
+      n.el.style.top = `${n.y}px`;
       if (n.kind === 'branch') layoutNode(id);
     });
 
@@ -1747,7 +1751,7 @@ const level2Lines: LineDef[] = branches.flatMap((b) =>
         drag.el.classList.add('is-dragging');
       }
       const s = boardScale();
-      n.x = clamp(drag.origX + dx / s, 60, 1640);
+      n.x = clamp(drag.origX + dx / s, 60, 1680);
       n.y = clamp(drag.origY + dy / s, 40, 1000);
       drag.el.style.transform = `${BASE_TX} translate(${n.x - drag.origX}px, ${n.y - drag.origY}px)`;
       updatePaths(drag.id);

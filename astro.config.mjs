@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
-import { writeFile } from 'node:fs/promises';
+import { writeFile, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 /* Herramienta local de autoría (solo `astro dev`): persiste el layout del
@@ -40,30 +40,25 @@ function renderMapLayout(branches, leaves) {
     Object.entries(obj)
       .map(([k, v]) => `  '${k}': { x: ${v.x}, y: ${v.y} },`)
       .join('\n');
-  return `/* ── Mapa de coordenadas del mapa semántico ──
-   Single source of truth del layout (single source of truth, ver DESIGN.md).
-   Flujo: acomodá los nodos a gusto en el tablero y botón "Guardar layout"
-   (persiste aquí vía /api/save-layout en dev; en producción cae a clipboard).
-   Ese pasa a ser el mapa base para todos. */
-
-export interface NodePosition {
-  x: number;
-  y: number;
+  return { branches: block(branches), leaves: block(leaves) };
 }
 
-/** Centro del lienzo 1440×940 (hub fijo, no arrastrable). */
-export const MAP_CENTER: NodePosition = { x: 720, y: 470 };
-
-/** Posición de los 4 pilares. */
-export const branchPositions: Record<string, NodePosition> = {
-${block(branches)}
-};
-
-/** Posición de las 10 hojas (lo único que vive aquí; el contenido viene de projects.ts). */
-export const leafPositions: Record<string, NodePosition> = {
-${block(leaves)}
-};
-`;
+// Reemplazo quirúrgico: solo sustituye los dos bloques de coordenadas,
+// preserva cabecera, centro y resto del archivo para que nunca diverjan.
+async function writeMapLayout(target, branches, leaves) {
+  const current = await readFile(target, 'utf8');
+  const parts = renderMapLayout(branches, leaves);
+  const next = current
+    .replace(
+      /export const branchPositions: Record<string, NodePosition> = \{[\s\S]*?\n\};/,
+      `export const branchPositions: Record<string, NodePosition> = {\n${parts.branches}\n};`,
+    )
+    .replace(
+      /export const leafPositions: Record<string, NodePosition> = \{[\s\S]*?\n\};/,
+      `export const leafPositions: Record<string, NodePosition> = {\n${parts.leaves}\n};`,
+    );
+  if (next === current) throw new Error('bloques no encontrados');
+  await writeFile(target, next, 'utf8');
 }
 
 const saveLayoutPlugin = {
@@ -113,7 +108,7 @@ const saveLayoutPlugin = {
         const target = fileURLToPath(
           new URL('./src/data/map-layout.ts', `file://${process.cwd()}/`),
         );
-        await writeFile(target, renderMapLayout(branches, leaves), 'utf8');
+        await writeMapLayout(target, branches, leaves);
       } catch {
         fail(409, 'no se pudo escribir');
         return;
