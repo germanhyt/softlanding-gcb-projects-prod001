@@ -14,7 +14,7 @@ export const MAP_CENTER: NodePosition = { x: 800, y: 500 };
 
 /** Posición de los 7 pilares (unidades de negocio). */
 export const branchPositions: Record<string, NodePosition> = {
-  'b-refugio': { x: 420, y: 500 },
+  'b-refugio': { x: 430, y: 500 },
   'b-channels': { x: 1170, y: 500 },
   'b-bosque': { x: 580, y: 280 },
   'b-ai': { x: 1120, y: 320 },
@@ -31,7 +31,7 @@ export const leafPositions: Record<string, NodePosition> = {
   'p-docgcb': { x: 160, y: 730 },
   'p-kiosk': { x: 1440, y: 310 },
   'p-runner': { x: 1440, y: 510 },
-  'p-bosque': { x: 435, y: 108 },
+  'p-bosque': { x: 440, y: 108 },
   'p-bosque-adm': { x: 735, y: 108 },
   'p-agenda': { x: 1035, y: 108 },
   'p-ai': { x: 1360, y: 108 },

@@ -1,36 +1,13 @@
 ---
 import { planetDefs } from '../data/projects.ts';
 import { icons } from '../data/icons.ts';
-import { MAP_CENTER, branchPositions, leafPositions } from '../data/map-layout.ts';
+import { MAP_CENTER } from '../data/map-layout.ts';
+import { resolveBranches } from '../data/branches.ts';
+import type { MapBranch } from '../data/branches.ts';
+import { edgePoint } from '../data/geometry.ts';
 
-/* ── Estructura de Datos para el Mapa Semántico Corporativo ── */
-interface MapLeaf {
-  id: string;
-  name: string;
-  sub: string;
-  desc: string;
-  href: string;
-  domain: string;
-  icon: string;
-  tag: string;
-  x: number;
-  y: number;
-  badge: string;
-}
-
-interface MapBranch {
-  id: string;
-  title: string;
-  desc: string;
-  category: string;
-  x: number;
-  y: number;
-  accent: string;
-  leaves: MapLeaf[];
-}
-
-/* Coordenadas en un lienzo expandido de 1440 × 940.
-   El layout vive en src/data/map-layout.ts (ver DESIGN.md). */
+/* Coordenadas en un lienzo expandido de 1840 × 1120.
+   Pilares y hojas se resuelven en src/data/branches.ts (ver DESIGN.md). */
 const CX = MAP_CENTER.x;
 const CY = MAP_CENTER.y;
 
@@ -40,116 +17,7 @@ const HUB_HALF = { hw: 165, hh: 80 };
 const BRANCH_HALF = { hw: 105, hh: 55 };
 const LEAF_HALF = { hw: 118, hh: 80 };
 
-/** Punto sobre el borde de una elipse (cx,cy,hw,hh) en la dirección (dx,dy). */
-function edgePoint(
-  cx: number, cy: number, hw: number, hh: number,
-  dx: number, dy: number, gap = 10,
-): { x: number; y: number } {
-  const len = Math.hypot(dx, dy) || 1;
-  const ux = dx / len;
-  const uy = dy / len;
-  const t = 1 / Math.sqrt((ux / hw) ** 2 + (uy / hh) ** 2) + gap;
-  return { x: cx + ux * t, y: cy + uy * t };
-}
-
-/* Layout del lienzo: lo único propio del mapa son las coordenadas x/y
-   (importadas de map-layout.ts). Todo el contenido (nombre, desc, URL,
-   badge, tag, domain, icono) viene de src/data/projects.ts. */
-const leafLayout = leafPositions;
-
-const branchLeafIds: Record<string, string[]> = {
-  'b-refugio': ['p-proc', 'p-del', 'p-com', 'p-docgcb'],
-  'b-channels': ['p-kiosk', 'p-runner', 'p-agenda'],
-  'b-bosque': ['p-bosque', 'p-bosque-adm'],
-  'b-ai': ['p-ai', 'p-n8n'],
-  'b-sisa': ['p-sisa', 'p-sisa-reg'],
-  'b-parking': ['p-est'],
-  'b-finanzas': ['p-conc', 'p-oc'],
-};
-
-function leafFromProject(id: string): MapLeaf {
-  const p = planetDefs.find((d) => d.id === id)!;
-  const pos = leafLayout[id]!;
-  return {
-    id: p.id,
-    name: p.label,
-    sub: p.full,
-    desc: p.desc,
-    href: p.href,
-    domain: p.domain ?? '',
-    icon: p.icon,
-    tag: p.tag ?? '',
-    badge: p.badge ?? '',
-    x: pos.x,
-    y: pos.y,
-  };
-}
-
-const branches: MapBranch[] = [
-  {
-    id: 'b-refugio',
-    title: 'Refugio Data',
-    desc: 'Operaciones & Gestión Core',
-    category: 'Analítica Operativa',
-    ...branchPositions['b-refugio'],
-    accent: '#C9A84C',
-    leaves: branchLeafIds['b-refugio']!.map(leafFromProject),
-  },
-  {
-    id: 'b-channels',
-    title: 'Canales de Venta',
-    desc: 'Punto de Venta & Despacho',
-    category: 'Canales',
-    ...branchPositions['b-channels'],
-    accent: '#3CC9A4',
-    leaves: branchLeafIds['b-channels']!.map(leafFromProject),
-  },
-  {
-    id: 'b-bosque',
-    title: 'Bosque Mágico',
-    desc: 'Fiestas & Administración',
-    category: 'Negocio',
-    ...branchPositions['b-bosque'],
-    accent: '#FF8C42',
-    leaves: branchLeafIds['b-bosque']!.map(leafFromProject),
-  },
-  {
-    id: 'b-ai',
-    title: 'Inteligencia de Datos',
-    desc: 'Modelos de Lenguaje & Análisis',
-    category: 'Analítica Avanzada',
-    ...branchPositions['b-ai'],
-    accent: '#4A9EFF',
-    leaves: branchLeafIds['b-ai']!.map(leafFromProject),
-  },
-  {
-    id: 'b-sisa',
-    title: 'SISA Reservas',
-    desc: 'Reservas & Registro',
-    category: 'Reservas',
-    ...branchPositions['b-sisa'],
-    accent: '#FF6B8E',
-    leaves: branchLeafIds['b-sisa']!.map(leafFromProject),
-  },
-  {
-    id: 'b-parking',
-    title: 'Parking',
-    desc: 'Control de acceso & Aforo',
-    category: 'Operaciones',
-    ...branchPositions['b-parking'],
-    accent: '#4A7A5A',
-    leaves: branchLeafIds['b-parking']!.map(leafFromProject),
-  },
-  {
-    id: 'b-finanzas',
-    title: 'Finanzas',
-    desc: 'Conciliación & Auditoría',
-    category: 'Finanzas',
-    ...branchPositions['b-finanzas'],
-    accent: '#FF6B8E',
-    leaves: branchLeafIds['b-finanzas']!.map(leafFromProject),
-  },
-];
+const branches: MapBranch[] = resolveBranches();
 
 const f1 = (n: number) => +n.toFixed(1);
 
