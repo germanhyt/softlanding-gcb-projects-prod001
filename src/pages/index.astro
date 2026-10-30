@@ -1,6 +1,7 @@
 ---
 import VariantLayout from '../layouts/VariantLayout.astro';
 import SemanticMap from '../components/SemanticMap.astro';
+import Equipo from '../components/Equipo.astro';
 import { planetDefs } from '../data/projects.ts';
 
 const year = new Date().getFullYear();
@@ -67,6 +68,13 @@ const systemCount = planetDefs.length;
           <SemanticMap />
         </div>
       </section>
+
+      <!-- ═══ SLIDE 3: NUESTRO EQUIPO ═══ -->
+      <section id="pres-equipo" class="pres-equipo relative py-4 sm:py-6" aria-label="Nuestro equipo">
+        <div id="pres-equipo-inner" class="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
+          <Equipo />
+        </div>
+      </section>
     </div>
   </div>
 
@@ -87,7 +95,8 @@ const systemCount = planetDefs.length;
     height: 100svh;
     z-index: 1;
   }
-  .pres-map {
+  .pres-map,
+  .pres-equipo {
     position: relative;
     z-index: 10;
     min-height: 100svh;
@@ -118,7 +127,8 @@ const systemCount = planetDefs.length;
     .pres-hero {
       position: relative;
     }
-    .pres-map {
+    .pres-map,
+    .pres-equipo {
       min-height: 100svh;
       border-top: none;
       border-left: 1px solid var(--color-variant-border);
@@ -278,6 +288,20 @@ const systemCount = planetDefs.length;
         },
       });
 
+      // Equipo: entra con presencia al llegar su slide
+      gsap.from('#pres-equipo-inner', {
+        opacity: 0,
+        scale: 0.98,
+        duration: 0.9,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#pres-equipo',
+          containerAnimation: slide,
+          start: 'left 75%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
       const drawable = prepLines();
       if (drawable.length > 0) {
         gsap.to(drawable, {
@@ -327,6 +351,19 @@ const systemCount = planetDefs.length;
         ease: 'power3.out',
         scrollTrigger: {
           trigger: '#pres-map',
+          start: 'top 92%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      gsap.from('#pres-equipo-inner', {
+        y: 90,
+        opacity: 0,
+        scale: 0.97,
+        duration: 1.2,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#pres-equipo',
           start: 'top 92%',
           toggleActions: 'play none none reverse',
         },

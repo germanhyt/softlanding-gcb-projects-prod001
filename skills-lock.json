@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "r3f-best-practices": {
+      "source": "emalorenzo/three-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/r3f-best-practices/SKILL.md",
+      "computedHash": "5d231c2345fee302b580549ef7a7446ef5a6c9598437f4c305eeb62e86beb273"
+    },
+    "three-best-practices": {
+      "source": "emalorenzo/three-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/three-best-practices/SKILL.md",
+      "computedHash": "f1d2981c4a865dd90d7fbd4e43df4570a0275cae3fde51199e03b2c8a20a4776"
+    }
+  }
+}

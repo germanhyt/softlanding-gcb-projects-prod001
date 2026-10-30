@@ -1,0 +1,743 @@
+---
+import { equipo, totalAreas, totalPersonas } from '../data/equipo.ts';
+
+const oficinaData = equipo.map((a) => ({
+  id: a.id,
+  nombre: a.nombre,
+  jefatura: a.jefatura,
+  count: a.personas.length,
+  personas: a.personas.map((p) => ({ nombre: p.nombre, ini: p.ini, rol: p.rol ?? null })),
+}));
+---
+
+<div class="eq-wrap">
+  <header class="eq-head">
+    <p class="eq-eyebrow">Organigrama</p>
+    <h2 class="eq-title">Nuestro equipo</h2>
+    <p class="eq-sub">
+      {totalPersonas} personas en {totalAreas} áreas. Explora la oficina 3D,
+      busca por nombre o filtra por área.
+    </p>
+  </header>
+
+  <div class="eq-controls" id="eq-controls">
+    <div class="eq-filterbar" id="eq-filterbar">
+      <button type="button" class="eq-toggle" id="eq-toggle-filters" aria-expanded="true" aria-controls="eq-filterbar">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+        </svg>
+        <span id="eq-toggle-label">Filtros</span>
+      </button>
+      <div class="eq-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <label class="eq-sr" for="eq-search-input">Buscar persona por nombre</label>
+        <input
+          type="search"
+          id="eq-search-input"
+          class="eq-search-input"
+          placeholder="Buscar por nombre…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button type="button" id="eq-clear" class="eq-clear" hidden aria-label="Limpiar búsqueda">✕</button>
+      </div>
+
+      <div class="eq-pills" role="group" aria-label="Filtrar por área">
+        <button type="button" class="eq-pill is-active" data-area-pill="all" aria-pressed="true">Todas</button>
+        {equipo.map((a) => (
+          <button
+            type="button"
+            class="eq-pill"
+            data-area-pill={a.id}
+            aria-pressed="false"
+            title={`${a.personas.length} ${a.personas.length === 1 ? 'persona' : 'personas'}`}
+          >
+            {a.nombre}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <p class="eq-count" aria-live="polite">
+      <span class="eq-dot" aria-hidden="true"></span>
+      <span id="eq-count-text">{totalPersonas} / {totalPersonas} personas · {totalAreas} / {totalAreas} áreas</span>
+    </p>
+  </div>
+
+  <div class="eq-stage" id="eq-stage">
+    <div class="eq-canvas-wrap" id="eq-canvas-wrap">
+      <div class="eq-canvas-fallback" aria-hidden="true"></div>
+      <canvas
+        id="eq-canvas"
+        class="eq-canvas"
+        role="img"
+        aria-label="Oficina 3D: zonas por área con un avatar por persona (67). Pasa el cursor sobre un avatar para ver su nombre, o sobre una zona para ver su jefatura."
+      ></canvas>
+      <div class="eq-tip" id="eq-tip" hidden></div>
+      <p class="eq-canvas-hint" id="eq-canvas-hint" hidden>
+        Toca un puesto para filtrar la lista.
+      </p>
+    </div>
+
+    <div class="eq-list-col">
+      <div class="eq-list" id="eq-list" role="list">
+        {equipo.map((a, i) => (
+          <article class="eq-area" data-area={a.id} role="listitem">
+            <h3 class="eq-area-title">
+              <button
+                type="button"
+                class="eq-area-head"
+                id={`eq-btn-${a.id}`}
+                aria-expanded={i === 0 ? 'true' : 'false'}
+                aria-controls={`eq-panel-${a.id}`}
+                data-eq-toggle
+              >
+                <span class="eq-area-names">
+                  <span class="eq-area-name">{a.nombre}</span>
+                  <span class="eq-area-boss">Jefatura: {a.jefatura}</span>
+                </span>
+                <span class="eq-area-meta">
+                  <span class="eq-area-n" data-eq-area-count>
+                    {a.personas.length} {a.personas.length === 1 ? 'persona' : 'personas'}
+                  </span>
+                  <svg class="eq-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </span>
+              </button>
+            </h3>
+            <div
+              class="eq-panel"
+              id={`eq-panel-${a.id}`}
+              role="region"
+              aria-labelledby={`eq-btn-${a.id}`}
+              hidden={i !== 0}
+            >
+              {a.personas.length === 0 ? (
+                <p class="eq-empty">Esta área aún no tiene personas registradas.</p>
+              ) : (
+                <ul class="eq-grid">
+                  {a.personas.map((p) => (
+                    <li class="eq-person" data-name={p.nombre.toLowerCase()}>
+                      <span class="eq-avatar" aria-hidden="true">{p.ini}</span>
+                      <span class="eq-who">
+                        <span class="eq-name">{p.nombre}</span>
+                        {p.rol && <span class="eq-rol">{p.rol}</span>}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+      <p class="eq-none" id="eq-none" hidden>Sin resultados para esta búsqueda.</p>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="eq-data" set:html={JSON.stringify(oficinaData)} />
+
+<script>
+  const root = document.getElementById('eq-list');
+  const stage = document.getElementById('eq-stage');
+  const canvasWrap = document.getElementById('eq-canvas-wrap');
+  const canvas = document.getElementById('eq-canvas');
+  const tip = document.getElementById('eq-tip');
+  const hint = document.getElementById('eq-canvas-hint');
+
+  type OficinaHandle = {
+    setFilter: (area: string, match: Set<string> | null) => void;
+    stats: () => { stations: number; figures: number; meshes: number; drawCalls: number };
+    pickTest: (nx: number, ny: number) => { avatar: string | null; zone: string | null };
+    dispose: () => void;
+  };
+  let oficina: OficinaHandle | null = null;
+
+  const readAreas = () => {
+    try {
+      const raw = document.getElementById('eq-data')?.textContent ?? '[]';
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
+  if (root) {
+    const input = document.getElementById('eq-search-input') as HTMLInputElement | null;
+    const clear = document.getElementById('eq-clear') as HTMLButtonElement | null;
+    const countText = document.getElementById('eq-count-text');
+    const none = document.getElementById('eq-none');
+    const controlsBox = document.getElementById('eq-controls');
+    const toggleBtn = document.getElementById('eq-toggle-filters');
+    const toggleLabel = document.getElementById('eq-toggle-label');
+    const pills = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-area-pill]'));
+    const areas = Array.from(root.querySelectorAll<HTMLElement>('.eq-area'));
+    const totalP = areas.reduce(
+      (n, a) => n + a.querySelectorAll('.eq-person').length,
+      0,
+    );
+    const totalA = areas.length;
+    let area = 'all';
+
+    const setOpen = (art: HTMLElement, open: boolean) => {
+      const btn = art.querySelector<HTMLButtonElement>('[data-eq-toggle]');
+      const panel = art.querySelector<HTMLElement>('.eq-panel');
+      if (!btn || !panel) return;
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (open) panel.removeAttribute('hidden');
+      else panel.setAttribute('hidden', '');
+    };
+
+    const notify3D = () => {
+      if (!oficina) return;
+      const visible = new Set(
+        areas.filter((a) => !a.hidden).map((a) => a.dataset.area ?? ''),
+      );
+      oficina.setFilter(area, visible.size === areas.length ? null : visible);
+    };
+
+    const apply = () => {
+      const q = (input?.value ?? '').trim().toLowerCase();
+      if (clear) clear.hidden = q.length === 0;
+      let visP = 0;
+      let visA = 0;
+      areas.forEach((art) => {
+        const matchArea = area === 'all' || art.dataset.area === area;
+        const persons = Array.from(art.querySelectorAll<HTMLElement>('.eq-person'));
+        let visInArea = 0;
+        persons.forEach((li) => {
+          const matchName = !q || (li.dataset.name ?? '').includes(q);
+          const show = matchArea && matchName;
+          li.hidden = !show;
+          if (show) visInArea += 1;
+        });
+        const showArea = matchArea && (persons.length === 0 ? !q : visInArea > 0);
+        art.hidden = !showArea;
+        if (showArea) {
+          visA += 1;
+          visP += visInArea;
+          if (q.length > 0 || area !== 'all') setOpen(art, true);
+        }
+      });
+      if (countText) {
+        countText.textContent = `${visP} / ${totalP} ${visP === 1 ? 'persona' : 'personas'} · ${visA} / ${totalA} ${visA === 1 ? 'área' : 'áreas'}`;
+      }
+      if (none) none.hidden = !(visA === 0);
+      notify3D();
+    };
+
+    const activatePill = (id: string, focusList: boolean) => {
+      const target = pills.find((p) => p.dataset.areaPill === id);
+      if (!target) return;
+      area = id;
+      pills.forEach((p) => {
+        const active = p === target;
+        p.classList.toggle('is-active', active);
+        p.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      apply();
+      if (focusList) {
+        const art = areas.find((a) => a.dataset.area === id);
+        art?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    };
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        activatePill(pill.dataset.areaPill ?? 'all', false);
+        syncToggleLabel();
+      });
+    });
+
+    // Collapse toggle: hides the whole filter bar, leaving only the chip.
+    const syncToggleLabel = () => {
+      if (!toggleBtn || !toggleLabel) return;
+      const collapsed = controlsBox?.classList.contains('is-collapsed') ?? false;
+      toggleBtn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      const active = pills.find((p) => p.classList.contains('is-active'));
+      const name = active?.textContent?.trim() ?? 'Todas';
+      toggleLabel.textContent = collapsed ? `Filtros · ${name}` : 'Filtros';
+    };
+    toggleBtn?.addEventListener('click', () => {
+      controlsBox?.classList.toggle('is-collapsed');
+      syncToggleLabel();
+    });
+    syncToggleLabel();
+
+    root.querySelectorAll<HTMLButtonElement>('[data-eq-toggle]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const art = btn.closest('.eq-area') as HTMLElement | null;
+        if (!art) return;
+        const open = btn.getAttribute('aria-expanded') === 'true';
+        setOpen(art, !open);
+      });
+    });
+
+    input?.addEventListener('input', apply);
+    clear?.addEventListener('click', () => {
+      if (!input) return;
+      input.value = '';
+      input.focus();
+      apply();
+    });
+
+    // ── Oficina 3D: carga diferida cuando el slide se acerca ──
+    if (stage && canvas instanceof HTMLCanvasElement) {
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const probe = document.createElement('canvas');
+      const hasGL =
+        !!probe.getContext('webgl') ||
+        !!probe.getContext('webgl2') ||
+        !!probe.getContext('experimental-webgl');
+
+      if (!hasGL) {
+        // Sin WebGL: la lista DOM sigue fully operativa; el canvas queda oculto.
+        canvasWrap?.classList.add('is-disabled');
+      } else {
+        const boot = () => {
+          import('../scripts/equipo-oficina')
+            .then(({ initOficina }) =>
+              initOficina(canvas, readAreas(), {
+                tooltip: tip,
+                onSelect: (id: string) => activatePill(id, true),
+              }),
+            )
+            .then((handle) => {
+              oficina = handle as OficinaHandle;
+              (window as unknown as { __oficina?: unknown }).__oficina = handle;
+              if (hint) hint.hidden = reduced ? true : false;
+              notify3D();
+              window.addEventListener('pagehide', () => handle.dispose(), { once: true });
+            })
+            .catch(() => {
+              canvasWrap?.classList.add('is-disabled');
+            });
+        };
+        const lazy = new IntersectionObserver(
+          (entries, obs) => {
+            if (entries[0]?.isIntersecting) {
+              obs.disconnect();
+              boot();
+            }
+          },
+          { rootMargin: '240px' },
+        );
+        lazy.observe(stage);
+      }
+    }
+  }
+</script>
+
+<style>
+  .eq-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+  .eq-head {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .eq-eyebrow {
+    margin: 0;
+    font-size: 0.7rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-variant-gold);
+  }
+  .eq-title {
+    margin: 0;
+    font-size: clamp(1.8rem, 4vw, 2.75rem);
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--color-variant-text);
+  }
+  .eq-sub {
+    margin: 0;
+    max-width: 44rem;
+    font-size: 0.9rem;
+    color: var(--color-variant-text-muted);
+  }
+  .eq-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  /* Single compact filter row: toggle + search + pills scroll horizontally. */
+  .eq-filterbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .eq-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    border: 1px solid var(--color-variant-border-strong);
+    border-radius: 999px;
+    background: rgba(201, 168, 76, 0.1);
+    color: var(--color-variant-gold);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .eq-controls.is-collapsed .eq-filterbar .eq-search,
+  .eq-controls.is-collapsed .eq-filterbar .eq-pills {
+    display: none;
+  }
+  .eq-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-variant-border);
+    border-radius: 999px;
+    background: var(--color-variant-surface);
+    padding: 0.4rem 0.8rem;
+    color: var(--color-variant-text-muted);
+    width: 13rem;
+    flex-shrink: 0;
+  }
+  .eq-search-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-variant-text);
+    font-size: 0.9rem;
+  }
+  .eq-search-input::placeholder {
+    color: var(--color-variant-text-muted);
+  }
+  .eq-clear {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--color-variant-text-muted);
+    font-size: 0.85rem;
+    line-height: 1;
+    padding: 0.15rem;
+  }
+  .eq-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .eq-pills {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 0.4rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(201, 168, 76, 0.45) transparent;
+    padding-bottom: 0.35rem;
+    min-width: 0;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+  }
+  .eq-pills::-webkit-scrollbar {
+    height: 6px;
+  }
+  .eq-pills::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .eq-pills::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.45);
+    border-radius: 999px;
+  }
+  .eq-pills::-webkit-scrollbar-thumb:hover {
+    background: rgba(201, 168, 76, 0.7);
+  }
+  .eq-pill {
+    border: 1px solid var(--color-variant-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-variant-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.32rem 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+  .eq-pill:hover {
+    border-color: rgba(201, 168, 76, 0.55);
+    color: var(--color-variant-text);
+  }
+  .eq-pill.is-active {
+    background: rgba(201, 168, 76, 0.14);
+    border-color: var(--color-variant-gold);
+    color: var(--color-variant-gold);
+  }
+  .eq-count {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--color-variant-text-muted);
+  }
+  .eq-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--color-variant-gold);
+    box-shadow: 0 0 12px rgba(201, 168, 76, 0.7);
+  }
+
+  /* ── Escenario 3D + lista accesible ── */
+  .eq-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    text-align: left;
+  }
+  .eq-canvas-wrap {
+    position: relative;
+    border: 1px solid var(--color-variant-border);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 42%, rgba(201, 168, 76, 0.12), transparent 70%),
+      radial-gradient(ellipse 45% 40% at 85% 90%, rgba(155, 109, 255, 0.08), transparent 70%),
+      var(--color-variant-surface);
+    height: 70svh;
+    min-height: 26rem;
+  }
+  .eq-canvas-fallback {
+    position: absolute;
+    inset: 0;
+  }
+  .eq-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: pan-y;
+  }
+  .eq-canvas-wrap.is-disabled .eq-canvas {
+    display: none;
+  }
+  .eq-tip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: 15rem;
+    padding: 0.55rem 0.8rem;
+    border-radius: 0.8rem;
+    border: 1px solid var(--color-variant-border-strong);
+    background: rgba(12, 12, 12, 0.92);
+    color: var(--color-variant-text);
+    font-size: 0.75rem;
+    line-height: 1.4;
+    pointer-events: none;
+    z-index: 3;
+  }
+  .eq-tip strong {
+    color: var(--color-variant-gold);
+    font-size: 0.82rem;
+  }
+  .eq-canvas-hint {
+    position: absolute;
+    bottom: 0.7rem;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid var(--color-variant-border);
+    background: rgba(12, 12, 12, 0.72);
+    color: var(--color-variant-text-muted);
+    font-size: 0.7rem;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .eq-list-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    min-width: 0;
+  }
+  @media (min-width: 1024px) {
+    .eq-stage {
+      flex-direction: row;
+      align-items: stretch;
+    }
+    .eq-canvas-wrap {
+      flex: 1.25;
+      height: auto;
+      min-height: 34rem;
+    }
+    .eq-list-col {
+      flex: 1;
+      min-width: 0;
+      max-height: 40rem;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+  }
+
+  .eq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    text-align: left;
+  }
+  .eq-area {
+    border: 1px solid var(--color-variant-border);
+    border-radius: 1rem;
+    background: var(--color-variant-surface);
+    overflow: hidden;
+  }
+  .eq-area-title {
+    margin: 0;
+    font-size: inherit;
+  }
+  .eq-area-head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.8rem 1rem;
+    text-align: left;
+  }
+  .eq-area-names {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+  .eq-area-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-variant-text);
+  }
+  .eq-area-boss {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--color-variant-gold);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 60vw;
+  }
+  .eq-area-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+  .eq-area-n {
+    font-size: 0.7rem;
+    color: var(--color-variant-text-muted);
+    border: 1px solid var(--color-variant-border);
+    border-radius: 999px;
+    padding: 0.15rem 0.6rem;
+    white-space: nowrap;
+  }
+  .eq-chev {
+    color: var(--color-variant-gold);
+    transition: transform 0.25s ease;
+  }
+  .eq-area-head[aria-expanded='false'] .eq-chev {
+    transform: rotate(-90deg);
+  }
+  .eq-panel {
+    border-top: 1px solid var(--color-variant-border);
+    padding: 0.9rem 1rem 1rem;
+  }
+  .eq-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .eq-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .eq-person {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    border: 1px solid var(--color-variant-border);
+    border-radius: 0.8rem;
+    padding: 0.5rem 0.65rem;
+    background: var(--color-variant-surface-elevated);
+  }
+  .eq-avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-variant-gold);
+    border: 1px solid var(--color-variant-border-strong);
+    background: rgba(201, 168, 76, 0.1);
+  }
+  .eq-who {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+  }
+  .eq-name {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--color-variant-text);
+    line-height: 1.25;
+  }
+  .eq-rol {
+    font-size: 0.68rem;
+    color: var(--color-variant-text-muted);
+    border: 1px solid var(--color-variant-border);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+    width: fit-content;
+  }
+  .eq-empty,
+  .eq-none {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-variant-text-muted);
+    text-align: center;
+    padding: 0.75rem 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .eq-chev {
+      transition: none;
+    }
+  }
+</style>
