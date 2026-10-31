@@ -183,3 +183,23 @@ export const equipo: Area[] = [
 export const totalAreas = equipo.length;
 
 export const totalPersonas = equipo.reduce((n, a) => n + a.personas.length, 0);
+
+/**
+ * Nombre corto para mostrar: SOLO 1 nombre + 1 apellido.
+ * Regla: primer token + penúltimo token (apellido paterno).
+ * - 1 token → se devuelve tal cual (con capitalización normalizada).
+ * - 2 tokens → ambos ("Katherine Tafur").
+ * - 3+ tokens → primero + penúltimo ("Roberto Carlos Ponce Canchihuaman"
+ *   → "Roberto Ponce"; "Nataly Salazar Chuquihuanca" → "Nataly Salazar").
+ * La capitalización se normaliza a tipo título ("JOSÉ BENITO SOTIL BINDELS"
+ * → "José Sotil") para que jefaturas en mayúsculas y nombres mixtos
+ * compartan el mismo criterio visual.
+ */
+export function nombreCorto(nombreCompleto: string): string {
+  const cap = (s: string): string =>
+    s.length === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  const parts = nombreCompleto.trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) return parts.map(cap).join(' ');
+  if (parts.length === 2) return parts.map(cap).join(' ');
+  return `${cap(parts[0])} ${cap(parts[parts.length - 2])}`;
+}

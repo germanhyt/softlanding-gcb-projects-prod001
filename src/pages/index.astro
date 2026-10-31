@@ -2,22 +2,20 @@
 import VariantLayout from '../layouts/VariantLayout.astro';
 import SemanticMap from '../components/SemanticMap.astro';
 import Equipo from '../components/Equipo.astro';
-import { planetDefs } from '../data/projects.ts';
 
 const year = new Date().getFullYear();
-const systemCount = planetDefs.length;
 ---
 
 <VariantLayout
   title="Grupo Cordillera Blanca SA"
-  description="Portal de acceso a los sistemas y aplicaciones de Grupo Cordillera Blanca SA."
+  description="Portal de acceso a las unidades de negocio de Grupo Cordillera Blanca SA."
 >
-  <!-- Pista horizontal (desktop): Portada → Mapa como slides -->
+  <!-- Pista horizontal (desktop): Portada → Oficina → Mapa como slides -->
   <div id="hwrap">
     <div id="htrack">
-      <!-- ═══ SLIDE 1: PORTADA ═══ -->
+      <!-- ═══ SLIDE 1: PORTADA / UNIDADES DE NEGOCIO ═══ -->
       <section id="pres-hero" class="pres-hero relative flex items-center justify-center overflow-hidden">
-        <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center">
+        <div id="pres-hero-content" class="relative z-10 mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 py-10 text-center">
           <img
             src="/logo-gcb.jpg"
             alt="GCB — Grupo Cordillera Blanca SA"
@@ -31,29 +29,23 @@ const systemCount = planetDefs.length;
           <h1 class="variant-heading font-bold leading-none">
             <span class="block text-5xl sm:text-7xl" style="color: var(--color-variant-gold);">Grupo Cordillera Blanca</span>
             <span class="mt-3 block text-xl sm:text-2xl font-medium" style="color: var(--color-variant-text-muted);">
-              Sociedad Anónima · Portal Central de Sistemas
+              Sociedad Anónima (S.A.)
             </span>
           </h1>
 
           <p class="max-w-2xl text-sm sm:text-lg" style="color: var(--color-variant-text-muted);">
-            De la identidad al ecosistema: desliza para recorrer el mapa semántico
-            que entrelaza nuestros siete pilares y {systemCount} plataformas.
+            Tres espacios, una misma hospitalidad: Convexia, Refugio Gastronómico
+            y Explanada Olguín. Desliza para recorrer la oficina virtual y el mapa
+            de la operación.
           </p>
-
-          <span
-            class="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-widest"
-            style="color: var(--color-variant-gold); border: 1px solid var(--color-variant-border); background-color: rgba(201,168,76,0.08);"
-          >
-            Presentación corporativa · {systemCount} sistemas
-          </span>
         </div>
 
         <!-- Scroll cue animado (en horizontal apunta a la derecha) -->
         <a
-          href="#pres-map"
+          href="#pres-equipo"
           id="pres-cue"
           class="pres-scroll-cue"
-          aria-label="Deslizar hacia el mapa de sistemas"
+          aria-label="Deslizar hacia la oficina virtual"
         >
           <span class="text-[10px] uppercase tracking-widest" style="color: var(--color-variant-text-muted);">Scroll</span>
           <svg class="pres-scroll-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-variant-gold);">
@@ -62,17 +54,29 @@ const systemCount = planetDefs.length;
         </a>
       </section>
 
-      <!-- ═══ SLIDE 2: MAPA SEMÁNTICO ═══ -->
-      <section id="pres-map" class="pres-map relative py-4 sm:py-6">
-        <div id="pres-map-inner" class="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
-          <SemanticMap />
-        </div>
-      </section>
-
-      <!-- ═══ SLIDE 3: NUESTRO EQUIPO ═══ -->
+      <!-- ═══ SLIDE 2: OFICINA VIRTUAL / NUESTRO EQUIPO ═══ -->
       <section id="pres-equipo" class="pres-equipo relative py-4 sm:py-6" aria-label="Nuestro equipo">
         <div id="pres-equipo-inner" class="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
           <Equipo />
+        </div>
+
+        <a
+          href="#pres-map"
+          id="pres-cue-equipo"
+          class="pres-scroll-cue pres-scroll-cue--next"
+          aria-label="Continuar hacia el mapa"
+        >
+          <span class="text-[10px] uppercase tracking-widest" style="color: var(--color-variant-text-muted);">Mapa</span>
+          <svg class="pres-scroll-chevron" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--color-variant-gold);">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </a>
+      </section>
+
+      <!-- ═══ SLIDE 3: MAPA SEMÁNTICO ═══ -->
+      <section id="pres-map" class="pres-map relative py-4 sm:py-6">
+        <div id="pres-map-inner" class="mx-auto w-full max-w-[1680px] px-4 sm:px-6 lg:px-8">
+          <SemanticMap />
         </div>
       </section>
     </div>
@@ -84,11 +88,12 @@ const systemCount = planetDefs.length;
     <nav aria-label="Vistas del portal">
       <a href="/variant">Variante 3D</a>
     </nav>
-  </footer></VariantLayout>
+  </footer></VariantLayout
+>
 
 <style>
-  /* ── Vertical (móvil / reduced-motion / sin JS): portada sticky y el
-     mapa la cubre como otra página ── */
+  /* ── Vertical (móvil / reduced-motion / sin JS): portada sticky y las
+     secciones la cubren como páginas, en orden hero → oficina → mapa ── */
   .pres-hero {
     position: sticky;
     top: 0;
@@ -109,7 +114,17 @@ const systemCount = planetDefs.length;
     padding-bottom: 3rem;
   }
 
-  /* ── Horizontal (desktop con motion): pista de 2 slides ── */
+  /* Snap suave por sección en apilado vertical: proximity, no secuestra. */
+  @media (max-width: 1023.98px) {
+    html {
+      scroll-snap-type: y proximity;
+    }
+    #htrack > section {
+      scroll-snap-align: start;
+    }
+  }
+
+  /* ── Horizontal (desktop con motion): pista de 3 slides ── */
   @media (min-width: 1024px) {
     #hwrap {
       overflow: hidden;
@@ -126,6 +141,7 @@ const systemCount = planetDefs.length;
     }
     .pres-hero {
       position: relative;
+      overflow-y: auto;
     }
     .pres-map,
     .pres-equipo {
@@ -152,6 +168,9 @@ const systemCount = planetDefs.length;
     gap: 0.4rem;
     text-decoration: none;
     z-index: 10;
+  }
+  .pres-scroll-cue--next {
+    bottom: 1rem;
   }
   .pres-scroll-chevron {
     animation: pres-cue-bounce 1.8s ease-in-out infinite;
@@ -238,9 +257,13 @@ const systemCount = planetDefs.length;
     };
 
     if (wide) {
-      // ── Slides horizontales: la pista se desplaza con pin + scrub ──
+      // ── Slides horizontales: la pista se desplaza con pin + scrub.
+      // Orden: hero (1) → oficina (2) → mapa (3). El snap por slide asienta
+      // la vista en el slide más cercano al soltar (proximity: tolerante,
+      // no secuestra el scroll; nada queda a mitad entre slides). ──
       const track = document.getElementById('htrack') as HTMLElement;
       const getX = () => Math.max(0, track.scrollWidth - window.innerWidth);
+      const slideCount = track.querySelectorAll(':scope > section').length;
       const slide = gsap.to(track, {
         x: () => -getX(),
         ease: 'none',
@@ -250,12 +273,28 @@ const systemCount = planetDefs.length;
           end: () => `+=${getX()}`,
           pin: true,
           scrub: 1,
+          snap: {
+            snapTo: 1 / Math.max(1, slideCount - 1),
+            duration: { min: 0.15, max: 0.6 },
+            delay: 0.12,
+            ease: 'power3.out',
+          },
           invalidateOnRefresh: true,
         },
       });
 
-      // El cue salta al final del recorrido (slide del mapa)
+      // El cue del hero salta al slide 2 (oficina); el cue intermedio
+      // de la oficina salta al final del recorrido (slide 3, mapa).
+      const scrollToProgress = (p: number) => {
+        const st = slide.scrollTrigger;
+        if (!st) return;
+        lenis.scrollTo(st.start + (st.end - st.start) * p);
+      };
       document.getElementById('pres-cue')?.addEventListener('click', (e: MouseEvent) => {
+        e.preventDefault();
+        scrollToProgress(0.5);
+      });
+      document.getElementById('pres-cue-equipo')?.addEventListener('click', (e: MouseEvent) => {
         e.preventDefault();
         lenis.scrollTo(slide.scrollTrigger!.end);
       });
@@ -274,28 +313,30 @@ const systemCount = planetDefs.length;
         },
       });
 
-      // Mapa: entra con presencia al llegar su slide
-      gsap.from('#pres-map-inner', {
+      // Oficina (slide 2): entra con fade + desplazamiento sutil
+      gsap.from('#pres-equipo-inner', {
         opacity: 0,
+        x: 48,
         scale: 0.98,
         duration: 0.9,
         ease: 'power3.out',
         scrollTrigger: {
-          trigger: '#pres-map',
+          trigger: '#pres-equipo',
           containerAnimation: slide,
           start: 'left 75%',
           toggleActions: 'play none none reverse',
         },
       });
 
-      // Equipo: entra con presencia al llegar su slide
-      gsap.from('#pres-equipo-inner', {
+      // Mapa (slide 3): entra con fade + desplazamiento sutil
+      gsap.from('#pres-map-inner', {
         opacity: 0,
+        x: 48,
         scale: 0.98,
         duration: 0.9,
         ease: 'power3.out',
         scrollTrigger: {
-          trigger: '#pres-equipo',
+          trigger: '#pres-map',
           containerAnimation: slide,
           start: 'left 75%',
           toggleActions: 'play none none reverse',
@@ -318,7 +359,8 @@ const systemCount = planetDefs.length;
         });
       }
     } else {
-      // ── Vertical (móvil): portada sticky + mapa que la cubre ──
+      // ── Vertical (móvil): portada sticky + secciones que la cubren,
+      // en orden hero → oficina → mapa ──
       document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach((a) => {
         a.addEventListener('click', (e: MouseEvent) => {
           const id = a.getAttribute('href');
@@ -343,19 +385,6 @@ const systemCount = planetDefs.length;
         },
       });
 
-      gsap.from('#pres-map-inner', {
-        y: 90,
-        opacity: 0,
-        scale: 0.97,
-        duration: 1.2,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: '#pres-map',
-          start: 'top 92%',
-          toggleActions: 'play none none reverse',
-        },
-      });
-
       gsap.from('#pres-equipo-inner', {
         y: 90,
         opacity: 0,
@@ -364,6 +393,19 @@ const systemCount = planetDefs.length;
         ease: 'power3.out',
         scrollTrigger: {
           trigger: '#pres-equipo',
+          start: 'top 92%',
+          toggleActions: 'play none none reverse',
+        },
+      });
+
+      gsap.from('#pres-map-inner', {
+        y: 90,
+        opacity: 0,
+        scale: 0.97,
+        duration: 1.2,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '#pres-map',
           start: 'top 92%',
           toggleActions: 'play none none reverse',
         },

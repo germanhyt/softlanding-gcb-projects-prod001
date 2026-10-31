@@ -1,12 +1,12 @@
 ---
-import { equipo, totalAreas, totalPersonas } from '../data/equipo.ts';
+import { equipo, totalAreas, totalPersonas, nombreCorto } from '../data/equipo.ts';
 
 const oficinaData = equipo.map((a) => ({
   id: a.id,
   nombre: a.nombre,
-  jefatura: a.jefatura,
+  jefatura: nombreCorto(a.jefatura),
   count: a.personas.length,
-  personas: a.personas.map((p) => ({ nombre: p.nombre, ini: p.ini, rol: p.rol ?? null })),
+  personas: a.personas.map((p) => ({ nombre: nombreCorto(p.nombre), ini: p.ini, rol: p.rol ?? null })),
 }));
 ---
 
@@ -96,7 +96,7 @@ const oficinaData = equipo.map((a) => ({
               >
                 <span class="eq-area-names">
                   <span class="eq-area-name">{a.nombre}</span>
-                  <span class="eq-area-boss">Jefatura: {a.jefatura}</span>
+                  <span class="eq-area-boss">Jefatura: {nombreCorto(a.jefatura)}</span>
                 </span>
                 <span class="eq-area-meta">
                   <span class="eq-area-n" data-eq-area-count>
@@ -123,7 +123,7 @@ const oficinaData = equipo.map((a) => ({
                     <li class="eq-person" data-name={p.nombre.toLowerCase()}>
                       <span class="eq-avatar" aria-hidden="true">{p.ini}</span>
                       <span class="eq-who">
-                        <span class="eq-name">{p.nombre}</span>
+                        <span class="eq-name">{nombreCorto(p.nombre)}</span>
                         {p.rol && <span class="eq-rol">{p.rol}</span>}
                       </span>
                     </li>
@@ -583,8 +583,9 @@ const oficinaData = equipo.map((a) => ({
       flex-direction: row;
       align-items: stretch;
     }
+    /* 3D grande a la izquierda (3/4), lista angosta a la derecha (1/4). */
     .eq-canvas-wrap {
-      flex: 1.25;
+      flex: 3;
       height: auto;
       min-height: 34rem;
     }
